@@ -2,102 +2,144 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BloxdVR v1.4.0 | Interactive Hub</title>
+    <title>BloxdVR v1.3.3 | Stable Build</title>
     <style>
-        :root { --primary: #2ecc00; --bg: #050505; --card-bg: #111; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        :root { --primary: #2ecc00; --bg: #0a0a0a; --panel: #161616; }
         
-        .container { background: rgba(15, 15, 15, 0.95); padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: center; width: 90%; max-width: 800px; z-index: 10; }
-        
-        /* 🎛️ Music Controls */
-        .audio-box { position: absolute; top: 20px; right: 20px; background: #222; padding: 10px; border-radius: 50px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--primary); }
-        
-        /* 👤 Avatar Grid */
-        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
-        .avatar-card { background: var(--card-bg); padding: 10px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-        .avatar-card:hover { border-color: var(--primary); transform: scale(1.05); }
-        .avatar-card.selected { border-color: var(--primary); background: #1a2e1a; }
-        .avatar-card img { width: 60px; height: 60px; image-rendering: pixelated; border-radius: 4px; }
+        body { 
+            margin: 0; background: var(--bg); color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
 
-        /* 🖼️ Skin Preview Modal */
-        #previewModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: #222; padding: 30px; border-radius: 15px; border: 2px solid var(--primary); text-align: center; max-width: 400px; }
-        .preview-img { width: 180px; height: 180px; image-rendering: pixelated; border: 4px solid #444; border-radius: 10px; margin-bottom: 15px; }
+        .hub-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
 
-        button { background: var(--primary); color: black; border: none; padding: 12px 40px; font-size: 1.1rem; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; }
-        .close-btn { background: #444; color: white; margin-top: 15px; padding: 8px; }
+        /* 🖼️ Left Side: Preview */
+        .preview-box {
+            background: #000;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #222;
+        }
+        
+        .preview-img {
+            width: 160px;
+            height: 160px;
+            image-rendering: pixelated;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* 👤 Right Side: Selection */
+        .selection-box { display: flex; flex-direction: column; }
+        
+        .avatar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 10px; 
+            margin-bottom: 20px;
+        }
+
+        .avatar-card { 
+            background: #222; 
+            padding: 8px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            transition: 0.2s;
+        }
+
+        .avatar-card:hover { border-color: #555; }
+        .avatar-card.active { border-color: var(--primary); background: #1a2e1a; }
+
+        .avatar-card img { width: 50px; height: 50px; image-rendering: pixelated; }
+
+        button { 
+            background: var(--primary); color: black; border: none;
+            padding: 15px; font-weight: bold; border-radius: 5px;
+            cursor: pointer; font-size: 1rem;
+        }
+        
+        button:hover { filter: brightness(1.1); }
     </style>
 </head>
 <body>
 
-    <!-- 🎵 Background Music -->
-    <div class="audio-box">
-        <span style="font-size: 0.7rem; color: var(--primary); font-weight: bold;">VOXEL BEATS</span>
-        <button onclick="toggleMusic()" id="musicBtn" style="padding: 5px 15px; font-size: 0.8rem; width: auto; margin: 0;">PLAY</button>
-        <audio id="bgMusic" loop src="https://files.freemusicarchive.org"></audio>
-    </div>
+    <div class="hub-container">
+        <!-- Feature A: Skin Preview -->
+        <div class="preview-box">
+            <h3 style="margin-top:0;">PREVIEW</h3>
+            <img id="mainPreview" src="./assets/icons/bob_icon.png" class="preview-img" onerror="this.src='https://www.minecraftskins.com'">
+            <h2 id="activeName" style="color:var(--primary); margin: 5px 0;">Bob</h2>
+            <p id="activeStatus" style="font-size: 0.8rem; color: #888;">Ready for Deployment</p>
+        </div>
 
-    <div class="container">
-        <h1>Bloxd<span style="color:var(--primary)">VR</span> <small style="font-size:0.5em; opacity:0.6;">v1.4.0</small></h1>
-        
-        <div class="avatar-grid" id="grid"></div>
+        <div class="selection-box">
+            <h1 style="margin-top:0;">BloxdVR <span style="color:var(--primary)">v1.3.3</span></h1>
+            <p style="font-size: 0.9rem; color: #aaa;">Select an identity to synchronize with the world.</p>
+            
+            <div class="avatar-grid" id="grid"></div>
 
-        <!-- 🚀 Direct Server Link -->
-        <button onclick="window.location.href='https://bloxd.io'">ENTER OFFICIAL SERVER</button>
-    </div>
-
-    <!-- 🔍 Preview Modal -->
-    <div id="previewModal">
-        <div class="modal-content">
-            <h2 id="prevName">Skin Name</h2>
-            <img id="prevImg" class="preview-img" src="" alt="Preview">
-            <p id="prevBio" style="color: #aaa; font-style: italic;"></p>
-            <button onclick="closePreview()">SELECT & EQUIP</button>
-            <button class="close-btn" onclick="closePreview()">CANCEL</button>
+            <!-- Feature B: Server Link -->
+            <button onclick="enterWorld()">SYNC & ENTER WORLD</button>
         </div>
     </div>
 
 <script>
     const repoPath = "./assets/icons/";
-    const avatars = [
-        { name: 'Bob', bio: 'The classic explorer.' },
-        { name: 'Leo', bio: 'Master of the voxel arts.' },
-        { name: 'Sanjay', bio: 'Silent but deadly in PvP.' },
-        { name: 'Enoch', bio: 'Ancient guardian of the hub.' },
-        { name: 'Emma', bio: 'Swift and precise builder.' },
-        { name: 'Isabel', bio: 'Legendary world hopper.' },
-        { name: 'Imara', bio: 'The neon specialist.' },
-        { name: 'Sara', bio: 'Sky-island architect.' }
+    const characters = [
+        { name: 'Bob', status: 'Frontier Scout' },
+        { name: 'Leo', status: 'Master Architect' },
+        { name: 'Sanjay', status: 'Void Runner' },
+        { name: 'Enoch', status: 'Iron Guardian' },
+        { name: 'Emma', status: 'Precision Pilot' },
+        { name: 'Isabel', status: 'Deep Sea Miner' },
+        { name: 'Imara', status: 'Neon Technic' },
+        { name: 'Sara', status: 'Sky Merchant' }
     ];
 
     const grid = document.getElementById('grid');
-    const modal = document.getElementById('previewModal');
+    const mainPreview = document.getElementById('mainPreview');
+    const activeName = document.getElementById('activeName');
+    const activeStatus = document.getElementById('activeStatus');
 
-    avatars.forEach(p => {
+    characters.forEach(char => {
         const card = document.createElement('div');
         card.className = 'avatar-card';
-        card.innerHTML = `<img src="${repoPath + p.name.toLowerCase()}_icon.png" onerror="this.src='https://www.minecraftskins.com'">`;
+        if(char.name === 'Bob') card.classList.add('active');
+
+        card.innerHTML = `<img src="${repoPath + char.name.toLowerCase()}_icon.png" onerror="this.src='https://www.minecraftskins.com'">`;
         
         card.onclick = () => {
-            document.getElementById('prevName').innerText = p.name;
-            document.getElementById('prevBio').innerText = p.bio;
-            document.getElementById('prevImg').src = repoPath + p.name.toLowerCase() + "_icon.png";
-            modal.style.display = 'flex';
-            localStorage.setItem('bloxd_avatar', p.name);
+            // Update UI
+            document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            
+            // Update Preview (Feature A)
+            mainPreview.src = repoPath + char.name.toLowerCase() + "_icon.png";
+            activeName.innerText = char.name;
+            activeStatus.innerText = char.status;
+            
+            // Save Data
+            localStorage.setItem('selectedChar', char.name);
         };
         grid.appendChild(card);
     });
 
-    function closePreview() { modal.style.display = 'none'; }
-
-    function toggleMusic() {
-        const music = document.getElementById('bgMusic');
-        const btn = document.getElementById('musicBtn');
-        if (music.paused) { music.play(); btn.innerText = "PAUSE"; } 
-        else { music.pause(); btn.innerText = "PLAY"; }
+    function enterWorld() {
+        // Feature B: Specific Lobby
+        window.location.href = 'https://bloxd.io';
     }
 </script>
 </body>
 </html>
-
-

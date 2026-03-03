@@ -20,6 +20,7 @@
             border: 1px solid var(--primary); color: var(--primary);
             padding: 8px 15px; border-radius: 20px; cursor: pointer;
             font-size: 0.8rem; font-weight: bold; transition: 0.3s; z-index: 100;
+            outline: none;
         }
         .audio-toggle:hover { background: var(--primary); color: black; }
 
@@ -64,16 +65,16 @@
         .enter-btn:hover { letter-spacing: 3px; filter: brightness(1.2); }
 
         @media (max-width: 700px) {
-            .main-hub { grid-template-columns: 1fr; height: auto; overflow-y: auto; }
+            .main-hub { grid-template-columns: 1fr; height: auto; overflow-y: auto; display: block; }
             .preview-pane { margin-bottom: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🔊 Feature C: Background Music -->
+    <!-- 🔊 Feature C: Background Music (Updated Path) -->
     <button class="audio-toggle" id="musicBtn" onclick="toggleAudio()">MUSIC: OFF</button>
-    <audio id="bgMusic" loop src="https://files.freemusicarchive.org"></audio>
+    <audio id="bgMusic" loop src="./assets/music/minecraft-theme_q5K6toI.mp3"></audio>
 
     <div class="main-hub">
         <!-- Preview Section -->
@@ -114,7 +115,6 @@
     const viewName = document.getElementById('viewName');
     const viewDesc = document.getElementById('viewDesc');
     
-    // Load last selection or default to Bob
     let current = localStorage.getItem('bloxd_avatar') || 'Bob';
 
     characters.forEach(char => {
@@ -124,7 +124,6 @@
         const iconSrc = `${repoPath}${char.name.toLowerCase()}_icon.png`;
         card.innerHTML = `<img src="${iconSrc}" onerror="this.src='https://www.minecraftskins.com'">`;
         
-        // Initializing the view if it matches saved state
         if(char.name === current) {
             viewImg.src = iconSrc;
             viewName.innerText = char.name;
@@ -134,29 +133,25 @@
         card.onclick = () => {
             document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
-            
-            // Update Preview (Feature A)
             viewImg.src = iconSrc;
             viewName.innerText = char.name;
             viewDesc.innerText = char.bio;
-            
             localStorage.setItem('bloxd_avatar', char.name);
         };
         grid.appendChild(card);
     });
 
-    // Feature B: Direct Server Link
     function enterWorld() {
         window.location.href = 'https://bloxd.io';
     }
 
-    // Feature C: Music Toggle
+    // Music Logic
     const music = document.getElementById('bgMusic');
     const btn = document.getElementById('musicBtn');
     
     function toggleAudio() {
         if (music.paused) {
-            music.play();
+            music.play().catch(e => console.error("Playback failed:", e));
             btn.innerText = "MUSIC: ON";
             btn.style.background = "var(--primary)";
             btn.style.color = "black";

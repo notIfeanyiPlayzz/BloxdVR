@@ -1,5 +1,5 @@
 javascript:(function(){
-    const scriptUrl = 'https://isiguzoflorence521-gif.github.io';
+    const scriptUrl = 'https://isiguzoflorence521-gif.github.io/BloxdVR/scripts/script.js';
     fetch(scriptUrl)
         .then(response => {
             if (!response.ok) throw new Error('File not found at ' + scriptUrl);
@@ -12,7 +12,7 @@ javascript:(function(){
         .catch(err => {
             console.warn('BloxdVR Load failed: ', err);
             // Fallback to root folder if scripts/ fails
-            fetch('https://isiguzoflorence521-gif.github.io')
+            fetch('https://isiguzoflorence521-gif.github.io/BloxdVR/scripts/script.js')
                 .then(r => r.text())
                 .then(eval);
         });

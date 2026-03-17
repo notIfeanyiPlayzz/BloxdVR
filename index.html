@@ -113,16 +113,20 @@
 
 <script>
     // 🗃️ Complete Skin Registry from your Assets Folder
-    const characters = [
-        { name: 'Bob', bio: 'The classic frontier scout.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
-        { name: 'Emma', bio: 'Precision sky-builder.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
-        { name: 'Leo', bio: 'Master voxel architect.', skin: '2025_10_04_leo-skin-from-bloxd-io-23562475.png' },
-        { name: 'Isabel', bio: 'Oceanic explorer.', skin: '2025_10_19_isabelv2-23590830.png' },
-        { name: 'Sanjay', bio: 'Expert survivalist.', skin: '2025_10_04_sanjay-skin-from-bloxd-io-23562484.png' },
-        { name: 'Imara', bio: 'Neon city specialist.', skin: '2025_10_04_imara-skin-from-bloxd-io-23562482.png' },
-        { name: 'Enoch', bio: 'The iron-clad guardian.', skin: '2025_10_07_enoch-skin-from-bloxd-23568141.png' },
-        { name: 'Sara', bio: 'High-altitude merchant.', skin: '2025_10_04_sara-skin-from-bloxd-io-23562479.png' }
-    ];
+  const characters = [
+    // --- The Core Four (Legacy) ---
+    { name: 'Bob', bio: 'The legendary face of Bloxd.io.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
+    { name: 'Emma', bio: 'Expert builder with green eyes and blonde hair.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
+    { name: 'Leo', bio: 'Blueprint architect and master of structure.', skin: '2025_10_04_leo-skin-from-bloxd-io-23562475.png' },
+    { name: 'Isabel', bio: 'Coastal traveler and veteran explorer.', skin: '2025_10_19_isabelv2-23590830.png' },
+
+    // --- The Expansion Roster ---
+    { name: 'Sanjay', bio: 'A rugged survivalist built for the wild.', skin: '2025_10_04_sanjay-skin-from-bloxd-io-23562484.png' },
+    { name: 'Imara', bio: 'A swift scout for urban and neon environments.', skin: '2025_10_04_imara-skin-from-bloxd-io-23562482.png' },
+    { name: 'Enoch', bio: 'The heavy-duty, iron-clad frontline defender.', skin: '2025_10_07_enoch-skin-from-bloxd-23568141.png' },
+    { name: 'Sara', bio: 'An elite merchant specializing in rare minerals.', skin: '2025_10_04_sara-skin-from-bloxd-io-23562479.png' }
+];
+
 
     const grid = document.getElementById('grid');
     const view3D = document.getElementById('view3D');

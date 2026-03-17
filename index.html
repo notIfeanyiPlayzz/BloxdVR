@@ -2,10 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BloxdVR v1.3.3 | Ultimate Hub</title>
+    <!-- 📦 3D Rendering Engine -->
     <script type="module" src="https://ajax.googleapis.com"></script>
     <style>
         :root { --primary: #2ecc00; --bg: #050505; --panel: #111; --text: #eee; }
+        
         body { 
             margin: 0; background: var(--bg); color: var(--text); 
             font-family: 'Segoe UI', Roboto, sans-serif;
@@ -13,13 +16,14 @@
             overflow: hidden;
         }
 
-        /* 🎧 Music Button */
+        /* 🎧 Music Control */
         .audio-toggle {
             position: fixed; top: 20px; right: 20px; background: var(--panel);
             border: 1px solid var(--primary); color: var(--primary);
             padding: 8px 15px; border-radius: 20px; cursor: pointer;
             font-size: 0.8rem; font-weight: bold; transition: 0.3s; z-index: 100;
         }
+        .audio-toggle:hover { background: var(--primary); color: black; }
 
         .main-hub {
             display: grid; grid-template-columns: 350px 1fr; gap: 30px;
@@ -28,7 +32,7 @@
             max-width: 1050px; width: 95%;
         }
 
-        /* 🧊 3D Model View */
+        /* 🧊 3D Preview Pane */
         .preview-pane {
             background: #000; border-radius: 12px; padding: 20px;
             text-align: center; border: 1px solid #222;
@@ -38,21 +42,22 @@
             --poster-color: transparent;
         }
 
+        /* 📋 Asset Monitor (skins/ folder logic) */
         .asset-monitor {
             background: #151515; padding: 12px; border-radius: 8px;
             margin-top: 15px; font-size: 0.7rem; text-align: left;
             border-left: 3px solid var(--primary); font-family: monospace;
         }
         .asset-monitor b { color: #555; font-size: 0.65rem; text-transform: uppercase; }
-        .asset-monitor div { color: var(--primary); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; }
+        .asset-monitor div { color: var(--primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* 👤 Grid */
+        /* 👤 Avatar Selection Grid */
         .avatar-grid { 
             display: grid; grid-template-columns: repeat(4, 1fr); 
-            gap: 12px; margin: 20px 0; max-height: 300px; overflow-y: auto;
+            gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto;
             padding-right: 10px;
         }
-        .avatar-grid::-webkit-scrollbar { width: 5px; }
+        .avatar-grid::-webkit-scrollbar { width: 6px; }
         .avatar-grid::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
         .avatar-card { 
@@ -67,9 +72,14 @@
             background: var(--primary); color: black; border: none;
             padding: 20px; font-size: 1.2rem; font-weight: 900;
             border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%;
-            text-transform: uppercase;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .enter-btn:hover { letter-spacing: 2px; filter: brightness(1.2); box-shadow: 0 0 20px rgba(46, 204, 0, 0.4); }
+        .enter-btn:hover { letter-spacing: 3px; filter: brightness(1.2); box-shadow: 0 0 20px rgba(46, 204, 0, 0.3); }
+
+        @media (max-width: 800px) {
+            .main-hub { grid-template-columns: 1fr; height: 90vh; overflow-y: auto; }
+            .preview-pane { margin-bottom: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -78,7 +88,7 @@
     <audio id="bgMusic" loop src="./assets/music/minecraft-theme_q5K6toI.mp3"></audio>
 
     <div class="main-hub">
-        <!-- Sidebar: 3D Viewer -->
+        <!-- Left: 3D Preview & Asset Data -->
         <div class="preview-pane">
             <model-viewer id="view3D" src="./assets/models/Bob.glb" 
                 auto-rotate camera-controls shadow-intensity="1" 
@@ -86,47 +96,43 @@
             </model-viewer>
             
             <h2 id="viewName" style="color:var(--primary); margin: 5px 0;">Bob</h2>
-            <p id="viewDesc" style="font-size: 0.8rem; color: #888;">Default Scout</p>
+            <p id="viewDesc" style="font-size: 0.8rem; color: #888;">The classic frontier scout.</p>
 
             <div class="asset-monitor">
                 <b>Active Mesh:</b>
                 <div id="fileModel">models/Bob.glb</div>
-                <b>Active Texture:</b>
-                <div id="fileSkin">textures/2025_10_04_bob...</div>
+                <b>Skin Texture (models/skins/):</b>
+                <div id="fileSkin">models/skins/2025_10_04_bob-skin...</div>
             </div>
         </div>
 
-        <!-- Main Content: Selection -->
-        <div class="content-pane">
-            <div style="margin-bottom: 20px;">
-                <h1 style="margin:0; font-size: 2rem;">Bloxd<span style="color:var(--primary)">VR</span></h1>
-                <p style="font-size: 0.85rem; color: #666;">v1.3.3 Build • [WebGL/WebXR Engine Active]</p>
+        <!-- Right: Header & Grid -->
+        <div class="content-pane" style="display: flex; flex-direction: column;">
+            <div style="margin-bottom: 10px;">
+                <h1 style="margin:0; font-size: 2.2rem;">Bloxd<span style="color:var(--primary)">VR</span> Hub</h1>
+                <p style="font-size: 0.85rem; color: #555;">v1.3.3 Stable • Asset Sync Active</p>
             </div>
 
             <div class="avatar-grid" id="grid"></div>
 
             <div style="margin-top: auto;">
-                <button class="enter-btn" onclick="enterWorld()">Enter Bloxd.io</button>
+                <button class="enter-btn" onclick="enterWorld()">Launch Official Server</button>
             </div>
         </div>
     </div>
 
 <script>
-    // 🗃️ Complete Skin Registry from your Assets Folder
-  const characters = [
-    // --- The Core Four (Legacy) ---
-    { name: 'Bob', bio: 'The legendary face of Bloxd.io.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
-    { name: 'Emma', bio: 'Expert builder with green eyes and blonde hair.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
-    { name: 'Leo', bio: 'Blueprint architect and master of structure.', skin: '2025_10_04_leo-skin-from-bloxd-io-23562475.png' },
-    { name: 'Isabel', bio: 'Coastal traveler and veteran explorer.', skin: '2025_10_19_isabelv2-23590830.png' },
-
-    // --- The Expansion Roster ---
-    { name: 'Sanjay', bio: 'A rugged survivalist built for the wild.', skin: '2025_10_04_sanjay-skin-from-bloxd-io-23562484.png' },
-    { name: 'Imara', bio: 'A swift scout for urban and neon environments.', skin: '2025_10_04_imara-skin-from-bloxd-io-23562482.png' },
-    { name: 'Enoch', bio: 'The heavy-duty, iron-clad frontline defender.', skin: '2025_10_07_enoch-skin-from-bloxd-23568141.png' },
-    { name: 'Sara', bio: 'An elite merchant specializing in rare minerals.', skin: '2025_10_04_sara-skin-from-bloxd-io-23562479.png' }
-];
-
+    // 🗃️ Complete 2025 Player Registry
+    const characters = [
+        { name: 'Bob', bio: 'The iconic face of Bloxd.io.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
+        { name: 'Emma', bio: 'Precision sky-builder and scout.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
+        { name: 'Leo', bio: 'Master architect and voxel engineer.', skin: '2025_10_04_leo-skin-from-bloxd-io-23562475.png' },
+        { name: 'Isabel', bio: 'Veteran explorer of coastal biomes.', skin: '2025_10_19_isabelv2-23590830.png' },
+        { name: 'Sanjay', bio: 'Expert survivalist and tracker.', skin: '2025_10_04_sanjay-skin-from-bloxd-io-23562484.png' },
+        { name: 'Imara', bio: 'Agile scout for neon cityscapes.', skin: '2025_10_04_imara-skin-from-bloxd-io-23562482.png' },
+        { name: 'Enoch', bio: 'The iron-clad frontline defender.', skin: '2025_10_07_enoch-skin-from-bloxd-23568141.png' },
+        { name: 'Sara', bio: 'Elite merchant and mineral specialist.', skin: '2025_10_04_sara-skin-from-bloxd-io-23562479.png' }
+    ];
 
     const grid = document.getElementById('grid');
     const view3D = document.getElementById('view3D');
@@ -135,23 +141,25 @@
     const fileModel = document.getElementById('fileModel');
     const fileSkin = document.getElementById('fileSkin');
 
+    // 🚀 Build Grid
     characters.forEach(char => {
         const card = document.createElement('div');
         card.className = `avatar-card ${char.name === 'Bob' ? 'selected' : ''}`;
         card.innerHTML = `<img src="./assets/icons/${char.name.toLowerCase()}_icon.png" onerror="this.src='https://bloxd.io'">`;
         
         card.onclick = () => {
+            // Update Selection UI
             document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             
-            // UI Updates
+            // Update 3D Viewer & Info
             view3D.src = `./assets/models/${char.name}.glb`;
             viewName.innerText = char.name;
             viewDesc.innerText = char.bio;
             
-            // Monitor Updates
+            // Update Asset Monitor paths (specifically the /skins subfolder)
             fileModel.innerText = `models/${char.name}.glb`;
-            fileSkin.innerText = `textures/${char.skin}`;
+            fileSkin.innerText = `models/skins/${char.skin}`;
             
             localStorage.setItem('bloxd_avatar', char.name);
         };
@@ -160,12 +168,21 @@
 
     function enterWorld() { window.location.href = 'https://bloxd.io'; }
 
-    // Audio Control
+    // 🎵 Music Control
     const music = document.getElementById('bgMusic');
     const btn = document.getElementById('musicBtn');
     function toggleAudio() {
-        if (music.paused) { music.play(); btn.innerText = "MUSIC: ON"; btn.style.background = "var(--primary)"; btn.style.color = "black"; }
-        else { music.pause(); btn.innerText = "MUSIC: OFF"; btn.style.background = "var(--panel)"; btn.style.color = "var(--primary)"; }
+        if (music.paused) { 
+            music.play(); 
+            btn.innerText = "MUSIC: ON"; 
+            btn.style.background = "var(--primary)"; 
+            btn.style.color = "black"; 
+        } else { 
+            music.pause(); 
+            btn.innerText = "MUSIC: OFF"; 
+            btn.style.background = "var(--panel)"; 
+            btn.style.color = "var(--primary)"; 
+        }
     }
 </script>
 </body>

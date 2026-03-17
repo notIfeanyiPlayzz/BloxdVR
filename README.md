@@ -1,3 +1,4 @@
+
 # 🎮 BloxdVR
 
 **BloxdVR** is a custom, community-driven virtual reality project that brings the world of [Bloxd.io](https://bloxd.io) into a fully immersive VR experience. This project serves as a VR client and toolkit, enabling head tracking, VR controls, and a true 3D camera view for Bloxd players.
@@ -55,7 +56,7 @@ Open a Pull Request.
 | **Sara**   | Head      | Dark Skin, Long Hair, Dark Brown Eyes     | Female | ✅ Live |
 
 ### 👕 VR-Synced Clothing (World Presence)
-The BloxdVR engine (v1.3.0) now dynamically maps your avatar's clothing to your VR hand/arm meshes:
+The BloxdVR engine (v1.3.3) now dynamically maps your avatar's clothing to your VR hand/arm meshes:
 
 *   **Hoodie:** Red texture, default full-length sleeves, brown belt.
 *   **Purple Top:** Purple texture, short sleeves, brown belt.

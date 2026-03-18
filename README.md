@@ -32,7 +32,7 @@ BloxdVR is currently a prototype. It serves as a testing ground for:
 VR-to-Web integration.
 Voxel-based movement physics.
 Integration into the wider Bloxd toolkit ecosystem.
-![BloxdVR v1.3.1 Interface](assets/images/screenshot.png)
+![BloxdVR v1.3.5 Interface](assets/images/screenshot.png)
 
 ### 🤝 Contributing
 Fork the Project.

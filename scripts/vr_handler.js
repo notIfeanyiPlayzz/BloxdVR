@@ -1,4 +1,5 @@
-// scripts/vr-handler.js
+//scripts/vr_handler.js
+
 export class BloxdVRHandler {
     constructor() {
         this.session = null;

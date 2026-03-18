@@ -3,118 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BloxdVR v1.3.3 | Ultimate Hub</title>
-    <!-- 📦 3D Rendering Engine -->
+    <title>BloxdVR v1.3.4 | Ultimate Hub</title>
+    
+    <!-- 🖼️ Favicon in /icons folder -->
+    <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+    
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <script type="module" src="https://ajax.googleapis.com"></script>
+
     <style>
         :root { --primary: #2ecc00; --bg: #050505; --panel: #111; --text: #eee; }
-        
         body { 
             margin: 0; background: var(--bg); color: var(--text); 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            display: flex; justify-content: center; align-items: center; height: 100vh;
-            overflow: hidden;
+            font-family: 'Pixelify Sans', sans-serif;
+            display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
         }
-
-        /* 🎧 Music Control */
         .audio-toggle {
             position: fixed; top: 20px; right: 20px; background: var(--panel);
             border: 1px solid var(--primary); color: var(--primary);
-            padding: 8px 15px; border-radius: 20px; cursor: pointer;
-            font-size: 0.8rem; font-weight: bold; transition: 0.3s; z-index: 100;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer; z-index: 100;
         }
-        .audio-toggle:hover { background: var(--primary); color: black; }
-
         .main-hub {
             display: grid; grid-template-columns: 350px 1fr; gap: 30px;
             background: var(--panel); padding: 40px; border-radius: 20px;
-            border: 1px solid #333; box-shadow: 0 10px 50px rgba(0,0,0,0.7);
-            max-width: 1050px; width: 95%;
+            border: 1px solid #333; max-width: 1050px; width: 95%;
         }
-
-        /* 🧊 3D Preview Pane */
-        .preview-pane {
-            background: #000; border-radius: 12px; padding: 20px;
-            text-align: center; border: 1px solid #222;
-        }
-        model-viewer {
-            width: 100%; height: 320px; margin-bottom: 15px;
-            --poster-color: transparent;
-        }
-
-        /* 📋 Asset Monitor (skins/ folder logic) */
+        .preview-pane { background: #000; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #222; }
+        model-viewer { width: 100%; height: 320px; }
         .asset-monitor {
-            background: #151515; padding: 12px; border-radius: 8px;
-            margin-top: 15px; font-size: 0.7rem; text-align: left;
-            border-left: 3px solid var(--primary); font-family: monospace;
+            background: #151515; padding: 12px; border-radius: 8px; margin-top: 15px; 
+            font-size: 0.65rem; text-align: left; border-left: 3px solid var(--primary); font-family: monospace;
         }
-        .asset-monitor b { color: #555; font-size: 0.65rem; text-transform: uppercase; }
-        .asset-monitor div { color: var(--primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* 👤 Avatar Selection Grid */
-        .avatar-grid { 
-            display: grid; grid-template-columns: repeat(4, 1fr); 
-            gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto;
-            padding-right: 10px;
-        }
-        .avatar-grid::-webkit-scrollbar { width: 6px; }
-        .avatar-grid::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        .avatar-card { 
-            background: #1a1a1a; padding: 10px; border-radius: 8px; cursor: pointer;
-            border: 2px solid transparent; transition: 0.2s; text-align: center;
-        }
-        .avatar-card:hover { border-color: #444; background: #222; }
+        .asset-monitor b { color: #555; text-transform: uppercase; }
+        .asset-monitor div { color: var(--primary); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto; }
+        .avatar-card { background: #1a1a1a; padding: 10px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; text-align: center; }
         .avatar-card.selected { border-color: var(--primary); background: #142514; }
         .avatar-card img { width: 50px; height: 50px; image-rendering: pixelated; }
-
         .enter-btn { 
-            background: var(--primary); color: black; border: none;
-            padding: 20px; font-size: 1.2rem; font-weight: 900;
-            border-radius: 8px; cursor: pointer; transition: 0.3s; width: 100%;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .enter-btn:hover { letter-spacing: 3px; filter: brightness(1.2); box-shadow: 0 0 20px rgba(46, 204, 0, 0.3); }
-
-        @media (max-width: 800px) {
-            .main-hub { grid-template-columns: 1fr; height: 90vh; overflow-y: auto; }
-            .preview-pane { margin-bottom: 20px; }
+            background: var(--primary); color: black; border: none; padding: 20px; font-size: 1.2rem; 
+            font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; font-family: 'Pixelify Sans', sans-serif;
         }
     </style>
 </head>
 <body>
 
     <button class="audio-toggle" id="musicBtn" onclick="toggleAudio()">MUSIC: OFF</button>
-    <audio id="bgMusic" loop src="./assets/music/minecraft-theme_q5K6toI.mp3"></audio>
+    <!-- 🎵 Adjusted Music Folder -->
+    <audio id="bgMusic" loop src="music/minecraft-theme_q5K6toI.mp3"></audio>
 
     <div class="main-hub">
-        <!-- Left: 3D Preview & Asset Data -->
         <div class="preview-pane">
-            <model-viewer id="view3D" src="./assets/models/Bob.glb" 
-                auto-rotate camera-controls shadow-intensity="1" 
-                environment-image="neutral" exposure="1.2">
-            </model-viewer>
-            
+            <model-viewer id="view3D" src="models/Bob.glb" auto-rotate camera-controls exposure="1.2"></model-viewer>
             <h2 id="viewName" style="color:var(--primary); margin: 5px 0;">Bob</h2>
-            <p id="viewDesc" style="font-size: 0.8rem; color: #888;">The classic frontier scout.</p>
-
+            <p id="viewDesc" style="font-size: 0.8rem; color: #888;">The iconic face of Bloxd.io.</p>
             <div class="asset-monitor">
-                <b>Active Mesh:</b>
-                <div id="fileModel">models/Bob.glb</div>
-                <b>Skin Texture (models/skins/):</b>
-                <div id="fileSkin">models/skins/2025_10_04_bob-skin...</div>
+                <b>Active Mesh:</b> <div id="fileModel">models/Bob.glb</div>
+                <b>Skin Texture:</b> <div id="fileSkin">textures/2025_10_04_bob-skin-from-bloxd-io-23562468.png</div>
             </div>
         </div>
 
-        <!-- Right: Header & Grid -->
         <div class="content-pane" style="display: flex; flex-direction: column;">
-            <div style="margin-bottom: 10px;">
+            <div>
                 <h1 style="margin:0; font-size: 2.2rem;">Bloxd<span style="color:var(--primary)">VR</span> Hub</h1>
-                <p style="font-size: 0.85rem; color: #555;">v1.3.3 Stable • Asset Sync Active</p>
+                <p style="font-size: 0.85rem; color: #555;">v1.3.4 Stable • Asset Sync Verified</p>
             </div>
-
             <div class="avatar-grid" id="grid"></div>
-
             <div style="margin-top: auto;">
                 <button class="enter-btn" onclick="enterWorld()">Launch Official Server</button>
             </div>
@@ -122,7 +76,7 @@
     </div>
 
 <script>
-    // 🗃️ Complete 2025 Player Registry
+    // 📁 Data Registry using your exact texture filenames
     const characters = [
         { name: 'Bob', bio: 'The iconic face of Bloxd.io.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
         { name: 'Emma', bio: 'Precision sky-builder and scout.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
@@ -141,25 +95,24 @@
     const fileModel = document.getElementById('fileModel');
     const fileSkin = document.getElementById('fileSkin');
 
-    // 🚀 Build Grid
     characters.forEach(char => {
         const card = document.createElement('div');
         card.className = `avatar-card ${char.name === 'Bob' ? 'selected' : ''}`;
-        card.innerHTML = `<img src="./assets/icons/${char.name.toLowerCase()}_icon.png" onerror="this.src='https://bloxd.io'">`;
+        
+        // 📁 Icons path: icons/[name]_icon.png
+        card.innerHTML = `<img src="icons/${char.name.toLowerCase()}_icon.png" onerror="this.src='icons/favicon.ico'">`;
         
         card.onclick = () => {
-            // Update Selection UI
             document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             
-            // Update 3D Viewer & Info
-            view3D.src = `./assets/models/${char.name}.glb`;
+            view3D.src = `models/${char.name}.glb`;
             viewName.innerText = char.name;
             viewDesc.innerText = char.bio;
             
-            // Update Asset Monitor paths (specifically the /skins subfolder)
+            // Updating the monitor to show your /textures/ folder
             fileModel.innerText = `models/${char.name}.glb`;
-            fileSkin.innerText = `models/skins/${char.skin}`;
+            fileSkin.innerText = `textures/${char.skin}`;
             
             localStorage.setItem('bloxd_avatar', char.name);
         };
@@ -168,21 +121,11 @@
 
     function enterWorld() { window.location.href = 'https://bloxd.io'; }
 
-    // 🎵 Music Control
     const music = document.getElementById('bgMusic');
     const btn = document.getElementById('musicBtn');
     function toggleAudio() {
-        if (music.paused) { 
-            music.play(); 
-            btn.innerText = "MUSIC: ON"; 
-            btn.style.background = "var(--primary)"; 
-            btn.style.color = "black"; 
-        } else { 
-            music.pause(); 
-            btn.innerText = "MUSIC: OFF"; 
-            btn.style.background = "var(--panel)"; 
-            btn.style.color = "var(--primary)"; 
-        }
+        if (music.paused) { music.play(); btn.innerText = "MUSIC: ON"; }
+        else { music.pause(); btn.innerText = "MUSIC: OFF"; }
     }
 </script>
 </body>

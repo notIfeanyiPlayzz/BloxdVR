@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BloxdVR v1.3.4 | Ultimate Hub</title>
     
-    <!-- 🖼️ Favicon in /icons folder -->
     <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
     
-    <!-- 🔤 Google Font & 🧊 3D Viewer Script -->
+    <!-- 🔤 FULL GOOGLE FONTS IMPORT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
+
+    <!-- 🧊 LATEST MODEL-VIEWER BUNDLE (Google CDN) -->
     <script type="module" src="https://ajax.googleapis.com"></script>
 
     <style>
@@ -19,55 +22,65 @@
             font-family: 'Pixelify Sans', sans-serif;
             display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
         }
+        
+        /* Loading Animation for 3D View */
+        model-viewer::part(default-progress-bar) { background-color: var(--primary); }
+        model-viewer#view3D:not([poster-dismissed]) { background-color: #000; }
+
         .audio-toggle {
             position: fixed; top: 20px; right: 20px; background: var(--panel);
             border: 1px solid var(--primary); color: var(--primary);
             padding: 8px 15px; border-radius: 20px; cursor: pointer; z-index: 100;
+            font-family: 'Pixelify Sans', sans-serif;
         }
         .main-hub {
             display: grid; grid-template-columns: 350px 1fr; gap: 30px;
             background: var(--panel); padding: 40px; border-radius: 20px;
             border: 1px solid #333; max-width: 1050px; width: 95%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
         .preview-pane { background: #000; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #222; }
-        model-viewer { width: 100%; height: 320px; }
+        model-viewer { width: 100%; height: 320px; --poster-color: transparent; }
+        
         .asset-monitor {
             background: #151515; padding: 12px; border-radius: 8px; margin-top: 15px; 
             font-size: 0.65rem; text-align: left; border-left: 3px solid var(--primary); font-family: monospace;
         }
-        .asset-monitor b { color: #555; text-transform: uppercase; }
-        .asset-monitor div { color: var(--primary); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; }
+        .asset-monitor div { color: var(--primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
         
-        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto; }
-        
-        /* 🛠️ ICON PATCH: Crops the skin file to show only the head */
+        /* 🛠️ ICON PATCH: Zoom on Face Area */
         .avatar-card { 
-            background: #1a1a1a; padding: 10px; border-radius: 8px; cursor: pointer; 
-            border: 2px solid transparent; text-align: center; overflow: hidden;
-            display: flex; justify-content: center; align-items: center; transition: 0.2s;
+            background: #1a1a1a; border-radius: 8px; cursor: pointer; border: 2px solid transparent; 
+            width: 75px; height: 75px; overflow: hidden; display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s ease-in-out;
         }
-        .avatar-card:hover { background: #222; }
-        .avatar-card.selected { border-color: var(--primary); background: #142514; }
-        
+        .avatar-card:hover { transform: scale(1.05); background: #222; }
         .avatar-card img { 
             width: 64px; height: 64px; image-rendering: pixelated; 
-            object-fit: none; object-position: -8px -8px; transform: scale(4); 
+            object-fit: none; object-position: -8px -8px; transform: scale(8); 
         }
-        
+        .avatar-card.selected { border-color: var(--primary); background: #142514; box-shadow: 0 0 15px rgba(46, 204, 0, 0.2); }
+
         .enter-btn { 
             background: var(--primary); color: black; border: none; padding: 20px; font-size: 1.2rem; 
-            font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; font-family: 'Pixelify Sans', sans-serif;
+            font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; 
+            font-family: 'Pixelify Sans', sans-serif; transition: 0.2s;
         }
+        .enter-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
     <button class="audio-toggle" id="musicBtn" onclick="toggleAudio()">MUSIC: OFF</button>
     <audio id="bgMusic" loop src="music/minecraft-theme_q5K6toI.mp3"></audio>
+    <audio id="clickSound" src="music/select.mp3"></audio>
 
     <div class="main-hub">
         <div class="preview-pane">
-            <model-viewer id="view3D" src="models/Bob.glb" auto-rotate camera-controls exposure="1.2"></model-viewer>
+            <!-- Added interaction-prompt for VR readiness -->
+            <model-viewer id="view3D" src="models/Bob.glb" auto-rotate camera-controls exposure="1.2" shadow-intensity="1" interaction-prompt="none"></model-viewer>
             <h2 id="viewName" style="color:var(--primary); margin: 5px 0;">Bob</h2>
             <p id="viewDesc" style="font-size: 0.8rem; color: #888;">The iconic face of Bloxd.io.</p>
             <div class="asset-monitor">
@@ -78,8 +91,8 @@
 
         <div class="content-pane" style="display: flex; flex-direction: column;">
             <div>
-                <h1 style="margin:0; font-size: 2.2rem;">Bloxd<span style="color:var(--primary)">VR</span> Hub</h1>
-                <p style="font-size: 0.85rem; color: #555;">v1.3.4 Stable • Asset Sync Verified</p>
+                <h1 style="margin:0; font-size: 2.2rem; letter-spacing: -1px;">Bloxd<span style="color:var(--primary)">VR</span> Hub</h1>
+                <p style="font-size: 0.85rem; color: #555;">v1.3.4 Stable • Assets Verified</p>
             </div>
             <div class="avatar-grid" id="grid"></div>
             <div style="margin-top: auto;">
@@ -106,22 +119,21 @@
     const viewDesc = document.getElementById('viewDesc');
     const fileModel = document.getElementById('fileModel');
     const fileSkin = document.getElementById('fileSkin');
+    const clickSound = document.getElementById('clickSound');
 
     characters.forEach(char => {
         const card = document.createElement('div');
         card.className = `avatar-card ${char.name === 'Bob' ? 'selected' : ''}`;
-        
-        // 📁 Icons now correctly pulled from the textures folder
-        card.innerHTML = `<img src="textures/${char.skin}" onerror="this.src='icons/favicon.ico'">`;
+        card.innerHTML = `<img src="textures/${char.skin}" alt="${char.name}" loading="lazy">`;
         
         card.onclick = () => {
+            playClick();
             document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
             
             view3D.src = `models/${char.name}.glb`;
             viewName.innerText = char.name;
             viewDesc.innerText = char.bio;
-            
             fileModel.innerText = `models/${char.name}.glb`;
             fileSkin.innerText = `textures/${char.skin}`;
             
@@ -130,6 +142,7 @@
         grid.appendChild(card);
     });
 
+    function playClick() { if(clickSound) { clickSound.currentTime = 0; clickSound.play().catch(()=>{}); } }
     function enterWorld() { window.location.href = 'https://bloxd.io'; }
 
     const music = document.getElementById('bgMusic');
@@ -141,3 +154,4 @@
 </script>
 </body>
 </html>
+

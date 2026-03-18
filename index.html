@@ -8,6 +8,7 @@
     <!-- 🖼️ Favicon in /icons folder -->
     <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
     
+    <!-- 🔤 Google Font & 🧊 3D Viewer Script -->
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <script type="module" src="https://ajax.googleapis.com"></script>
 
@@ -36,10 +37,23 @@
         }
         .asset-monitor b { color: #555; text-transform: uppercase; }
         .asset-monitor div { color: var(--primary); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; }
+        
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto; }
-        .avatar-card { background: #1a1a1a; padding: 10px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; text-align: center; }
+        
+        /* 🛠️ ICON PATCH: Crops the skin file to show only the head */
+        .avatar-card { 
+            background: #1a1a1a; padding: 10px; border-radius: 8px; cursor: pointer; 
+            border: 2px solid transparent; text-align: center; overflow: hidden;
+            display: flex; justify-content: center; align-items: center; transition: 0.2s;
+        }
+        .avatar-card:hover { background: #222; }
         .avatar-card.selected { border-color: var(--primary); background: #142514; }
-        .avatar-card img { width: 50px; height: 50px; image-rendering: pixelated; }
+        
+        .avatar-card img { 
+            width: 64px; height: 64px; image-rendering: pixelated; 
+            object-fit: none; object-position: -8px -8px; transform: scale(4); 
+        }
+        
         .enter-btn { 
             background: var(--primary); color: black; border: none; padding: 20px; font-size: 1.2rem; 
             font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; font-family: 'Pixelify Sans', sans-serif;
@@ -49,7 +63,6 @@
 <body>
 
     <button class="audio-toggle" id="musicBtn" onclick="toggleAudio()">MUSIC: OFF</button>
-    <!-- 🎵 Adjusted Music Folder -->
     <audio id="bgMusic" loop src="music/minecraft-theme_q5K6toI.mp3"></audio>
 
     <div class="main-hub">
@@ -76,7 +89,6 @@
     </div>
 
 <script>
-    // 📁 Data Registry using your exact texture filenames
     const characters = [
         { name: 'Bob', bio: 'The iconic face of Bloxd.io.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
         { name: 'Emma', bio: 'Precision sky-builder and scout.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
@@ -99,8 +111,8 @@
         const card = document.createElement('div');
         card.className = `avatar-card ${char.name === 'Bob' ? 'selected' : ''}`;
         
-        // 📁 Icons path: icons/[name]_icon.png
-        card.innerHTML = `<img src="icons/${char.name.toLowerCase()}_icon.png" onerror="this.src='icons/favicon.ico'">`;
+        // 📁 Icons now correctly pulled from the textures folder
+        card.innerHTML = `<img src="textures/${char.skin}" onerror="this.src='icons/favicon.ico'">`;
         
         card.onclick = () => {
             document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
@@ -110,7 +122,6 @@
             viewName.innerText = char.name;
             viewDesc.innerText = char.bio;
             
-            // Updating the monitor to show your /textures/ folder
             fileModel.innerText = `models/${char.name}.glb`;
             fileSkin.innerText = `textures/${char.skin}`;
             
@@ -130,4 +141,3 @@
 </script>
 </body>
 </html>
-

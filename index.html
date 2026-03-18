@@ -1,157 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BloxdVR v1.3.4 | Ultimate Hub</title>
-    
-    <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
-    
-    <!-- 🔤 FULL GOOGLE FONTS IMPORT -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BloxdVR Hub v1.3.4</title>
 
-    <!-- 🧊 LATEST MODEL-VIEWER BUNDLE (Google CDN) -->
-    <script type="module" src="https://ajax.googleapis.com"></script>
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <style>
-        :root { --primary: #2ecc00; --bg: #050505; --panel: #111; --text: #eee; }
-        body { 
-            margin: 0; background: var(--bg); color: var(--text); 
-            font-family: 'Pixelify Sans', sans-serif;
-            display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
-        }
-        
-        /* Loading Animation for 3D View */
-        model-viewer::part(default-progress-bar) { background-color: var(--primary); }
-        model-viewer#view3D:not([poster-dismissed]) { background-color: #000; }
+<!-- Model Viewer -->
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-        .audio-toggle {
-            position: fixed; top: 20px; right: 20px; background: var(--panel);
-            border: 1px solid var(--primary); color: var(--primary);
-            padding: 8px 15px; border-radius: 20px; cursor: pointer; z-index: 100;
-            font-family: 'Pixelify Sans', sans-serif;
-        }
-        .main-hub {
-            display: grid; grid-template-columns: 350px 1fr; gap: 30px;
-            background: var(--panel); padding: 40px; border-radius: 20px;
-            border: 1px solid #333; max-width: 1050px; width: 95%;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-        }
-        .preview-pane { background: #000; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #222; }
-        model-viewer { width: 100%; height: 320px; --poster-color: transparent; }
-        
-        .asset-monitor {
-            background: #151515; padding: 12px; border-radius: 8px; margin-top: 15px; 
-            font-size: 0.65rem; text-align: left; border-left: 3px solid var(--primary); font-family: monospace;
-        }
-        .asset-monitor div { color: var(--primary); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+<style>
+:root {
+  --bg: #050505;
+  --panel: #111;
+  --accent: #2ecc00;
+}
 
-        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; max-height: 320px; overflow-y: auto; padding-right: 5px; }
-        
-        /* 🛠️ ICON PATCH: Zoom on Face Area */
-        .avatar-card { 
-            background: #1a1a1a; border-radius: 8px; cursor: pointer; border: 2px solid transparent; 
-            width: 75px; height: 75px; overflow: hidden; display: flex; align-items: center; justify-content: center;
-            transition: all 0.15s ease-in-out;
-        }
-        .avatar-card:hover { transform: scale(1.05); background: #222; }
-        .avatar-card img { 
-            width: 64px; height: 64px; image-rendering: pixelated; 
-            object-fit: none; object-position: -8px -8px; transform: scale(8); 
-        }
-        .avatar-card.selected { border-color: var(--primary); background: #142514; box-shadow: 0 0 15px rgba(46, 204, 0, 0.2); }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Pixelify Sans', monospace;
+}
 
-        .enter-btn { 
-            background: var(--primary); color: black; border: none; padding: 20px; font-size: 1.2rem; 
-            font-weight: 900; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; 
-            font-family: 'Pixelify Sans', sans-serif; transition: 0.2s;
-        }
-        .enter-btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
-    </style>
+body {
+  background: var(--bg);
+  color: var(--accent);
+  overflow: hidden;
+}
+
+/* Loading Screen */
+#boot {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.logo {
+  font-size: 2rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity: .6 }
+  50% { opacity: 1 }
+}
+
+.progress {
+  width: 200px;
+  height: 10px;
+  border: 1px solid var(--accent);
+  margin-top: 15px;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  animation: load 2s forwards;
+}
+
+@keyframes load {
+  to { width: 100% }
+}
+
+/* Layout */
+.container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  height: 100vh;
+}
+
+/* Left Panel */
+.sidebar {
+  background: var(--panel);
+  padding: 15px;
+  overflow-y: auto;
+  border-right: 2px solid #000;
+}
+
+.card {
+  background: #000;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: .2s;
+  border: 1px solid #222;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.asset-monitor {
+  margin-top: 15px;
+  background: #000;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 12px;
+  border: 1px solid var(--accent);
+}
+
+/* Right Panel */
+.main {
+  position: relative;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+/* Loader ring */
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  border: 4px solid #222;
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Top Right */
+.topbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+button {
+  background: #000;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Glitch button */
+.launch {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 1.2rem;
+}
+
+.launch:hover {
+  animation: glitch 0.3s infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  100% { transform: translate(1px, -1px); }
+}
+</style>
 </head>
+
 <body>
 
-    <button class="audio-toggle" id="musicBtn" onclick="toggleAudio()">MUSIC: OFF</button>
-    <audio id="bgMusic" loop src="music/minecraft-theme_q5K6toI.mp3"></audio>
-    <audio id="clickSound" src="music/select.mp3"></audio>
+<!-- Boot Screen -->
+<div id="boot">
+  <div class="logo">BLOXDVR HUB</div>
+  <div>Syncing Assets...</div>
+  <div class="progress"><div class="bar"></div></div>
+</div>
 
-    <div class="main-hub">
-        <div class="preview-pane">
-            <!-- Added interaction-prompt for VR readiness -->
-            <model-viewer id="view3D" src="models/Bob.glb" auto-rotate camera-controls exposure="1.2" shadow-intensity="1" interaction-prompt="none"></model-viewer>
-            <h2 id="viewName" style="color:var(--primary); margin: 5px 0;">Bob</h2>
-            <p id="viewDesc" style="font-size: 0.8rem; color: #888;">The iconic face of Bloxd.io.</p>
-            <div class="asset-monitor">
-                <b>Active Mesh:</b> <div id="fileModel">models/Bob.glb</div>
-                <b>Skin Texture:</b> <div id="fileSkin">textures/2025_10_04_bob-skin-from-bloxd-io-23562468.png</div>
-            </div>
-        </div>
+<div class="container">
 
-        <div class="content-pane" style="display: flex; flex-direction: column;">
-            <div>
-                <h1 style="margin:0; font-size: 2.2rem; letter-spacing: -1px;">Bloxd<span style="color:var(--primary)">VR</span> Hub</h1>
-                <p style="font-size: 0.85rem; color: #555;">v1.3.4 Stable • Assets Verified</p>
-            </div>
-            <div class="avatar-grid" id="grid"></div>
-            <div style="margin-top: auto;">
-                <button class="enter-btn" onclick="enterWorld()">Launch Official Server</button>
-            </div>
-        </div>
+  <!-- Sidebar -->
+  <div class="sidebar" id="characterList"></div>
+
+  <!-- Main -->
+  <div class="main">
+    
+    <div class="topbar">
+      <button id="musicToggle">Music: OFF</button>
     </div>
 
+    <model-viewer id="viewer" auto-rotate camera-controls></model-viewer>
+
+    <div class="loader" id="loader"></div>
+
+    <button class="launch" onclick="location.href='vr.html'">
+      Launch VR Mode
+    </button>
+
+    <div class="asset-monitor" id="monitor"></div>
+
+  </div>
+
+</div>
+
+<!-- Audio -->
+<audio id="bgm" loop src="assets/music/minecraft-theme_q5K6toI.mp3"></audio>
+<audio id="selectSound" src="assets/music/select.mp3"></audio>
+
 <script>
-    const characters = [
-        { name: 'Bob', bio: 'The iconic face of Bloxd.io.', skin: '2025_10_04_bob-skin-from-bloxd-io-23562468.png' },
-        { name: 'Emma', bio: 'Precision sky-builder and scout.', skin: '2025_10_04_emma-skin-from-bloxd-io-23562472.png' },
-        { name: 'Leo', bio: 'Master architect and voxel engineer.', skin: '2025_10_04_leo-skin-from-bloxd-io-23562475.png' },
-        { name: 'Isabel', bio: 'Veteran explorer of coastal biomes.', skin: '2025_10_19_isabelv2-23590830.png' },
-        { name: 'Sanjay', bio: 'Expert survivalist and tracker.', skin: '2025_10_04_sanjay-skin-from-bloxd-io-23562484.png' },
-        { name: 'Imara', bio: 'Agile scout for neon cityscapes.', skin: '2025_10_04_imara-skin-from-bloxd-io-23562482.png' },
-        { name: 'Enoch', bio: 'The iron-clad frontline defender.', skin: '2025_10_07_enoch-skin-from-bloxd-23568141.png' },
-        { name: 'Sara', bio: 'Elite merchant and mineral specialist.', skin: '2025_10_04_sara-skin-from-bloxd-io-23562479.png' }
-    ];
+/* Character Registry */
+const characters = [
+  {name:"Bob", skin:"2025_10_04_bob-skin-from-bloxd-io-23562468.png"},
+  {name:"Emma", skin:"2025_10_04_emma-skin-from-bloxd-io-23562472.png"},
+  {name:"Leo", skin:"2025_10_04_leo-skin-from-bloxd-io-23562475.png"},
+  {name:"Isabel", skin:"2025_10_19_isabelv2-23590830.png"},
+  {name:"Sanjay", skin:"2025_10_04_sanjay-skin-from-bloxd-io-23562484.png"},
+  {name:"Imara", skin:"2025_10_04_imara-skin-from-bloxd-io-23562482.png"},
+  {name:"Enoch", skin:"2025_10_07_enoch-skin-from-bloxd-23568141.png"},
+  {name:"Sara", skin:"2025_10_04_sara-skin-from-bloxd-io-23562479.png"}
+];
 
-    const grid = document.getElementById('grid');
-    const view3D = document.getElementById('view3D');
-    const viewName = document.getElementById('viewName');
-    const viewDesc = document.getElementById('viewDesc');
-    const fileModel = document.getElementById('fileModel');
-    const fileSkin = document.getElementById('fileSkin');
-    const clickSound = document.getElementById('clickSound');
+const list = document.getElementById("characterList");
+const viewer = document.getElementById("viewer");
+const monitor = document.getElementById("monitor");
+const loader = document.getElementById("loader");
 
-    characters.forEach(char => {
-        const card = document.createElement('div');
-        card.className = `avatar-card ${char.name === 'Bob' ? 'selected' : ''}`;
-        card.innerHTML = `<img src="textures/${char.skin}" alt="${char.name}" loading="lazy">`;
-        
-        card.onclick = () => {
-            playClick();
-            document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            
-            view3D.src = `models/${char.name}.glb`;
-            viewName.innerText = char.name;
-            viewDesc.innerText = char.bio;
-            fileModel.innerText = `models/${char.name}.glb`;
-            fileSkin.innerText = `textures/${char.skin}`;
-            
-            localStorage.setItem('bloxd_avatar', char.name);
-        };
-        grid.appendChild(card);
-    });
+/* Build UI */
+characters.forEach(char => {
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerText = char.name;
 
-    function playClick() { if(clickSound) { clickSound.currentTime = 0; clickSound.play().catch(()=>{}); } }
-    function enterWorld() { window.location.href = 'https://bloxd.io'; }
+  div.onclick = () => {
+    document.getElementById("selectSound").play();
 
-    const music = document.getElementById('bgMusic');
-    const btn = document.getElementById('musicBtn');
-    function toggleAudio() {
-        if (music.paused) { music.play(); btn.innerText = "MUSIC: ON"; }
-        else { music.pause(); btn.innerText = "MUSIC: OFF"; }
-    }
+    const modelPath = `assets/models/skins/${char.name}.glb`;
+    const texturePath = `assets/textures/${char.skin}`;
+
+    loader.style.display = "block";
+
+    viewer.src = modelPath;
+
+    monitor.innerText =
+      `MODEL:\n${modelPath}\n\nTEXTURE:\n${texturePath}`;
+
+    localStorage.setItem("bloxd_avatar", char.name);
+  };
+
+  list.appendChild(div);
+});
+
+/* Model loading events */
+viewer.addEventListener("load", () => {
+  loader.style.display = "none";
+});
+
+/* Music Toggle */
+const bgm = document.getElementById("bgm");
+const btn = document.getElementById("musicToggle");
+
+btn.onclick = () => {
+  if (bgm.paused) {
+    bgm.play();
+    btn.innerText = "Music: ON";
+  } else {
+    bgm.pause();
+    btn.innerText = "Music: OFF";
+  }
+};
+
+/* Boot screen */
+setTimeout(() => {
+  document.getElementById("boot").style.opacity = "0";
+  setTimeout(() => document.getElementById("boot").remove(), 500);
+}, 2000);
 </script>
+
 </body>
 </html>
-

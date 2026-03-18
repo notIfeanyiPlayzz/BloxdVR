@@ -41,7 +41,7 @@ Commit your changes (git commit -m 'Add VR teleportation').
 Push to the Branch (git push origin feature/NewVRFeature).
 Open a Pull Request.
 
-### 👤 Supported VR Avatars (v1.3.4)
+### 👤 Supported VR Avatars (v1.3.5)
 
 
 | Name    | Body Part | Appearance                                | Gender | Status |
@@ -56,13 +56,13 @@ Open a Pull Request.
 | **Sara**   | Head      | Dark Skin, Long Hair, Dark Brown Eyes     | Female | ✅ Live |
 
 ### 👕 VR-Synced Clothing (World Presence)
-The BloxdVR engine (v1.3.4) now dynamically maps your avatar's clothing to your VR hand/arm meshes:
+The BloxdVR engine (v1.3.5) now dynamically maps your avatar's clothing to your VR hand/arm meshes:
 
 *   **Hoodie:** Red texture, default full-length sleeves, brown belt.
 *   **Purple Top:** Purple texture, short sleeves, brown belt.
 *   **Light Blue Polo:** Blue texture, short sleeves, black belt.
 *   **Green Top:** Green texture, rolled-up sleeve meshes.
-*   **Khakis:** Brown-ish texture with small pocket, brown belt.
+*   **Khakis:** Brown-ish texture with a small pocket, brown belt.
 *   **Light Blue Crop Top:** Light blue texture, sleeveless/crop style.
 
 ### 👖 Lower Body Sync

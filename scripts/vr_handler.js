@@ -1,4 +1,4 @@
-//scripts/vr_handler.js
+//scripts/vr_handler.j
 
 export class BloxdVRHandler {
     constructor() {

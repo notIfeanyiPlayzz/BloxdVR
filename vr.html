@@ -2,96 +2,148 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BloxdVR // SYSTEM_OS_v1.3.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloxdVR | Active VR Session</title>
+    
+    <!-- 🖼️ Assets Mapping -->
+    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
     <link href="https://fonts.googleapis.com" rel="stylesheet">
+    
+    <!-- 🧊 3D Viewer & VR Libs -->
+    <script type="module" src="https://ajax.googleapis.com"></script>
+    <script src="libs/webxr-polyfill.js"></script>
+    <script src="scripts/vr_handler.js" defer></script>
+
     <style>
-        :root {
-            --neon-green: #00ff41;
-            --dark-bg: #050505;
-            --interface-blue: #0080ff;
-        }
-
+        :root { --primary: #2ecc00; --bg: #000; --panel: #0d0d0d; --text: #eee; --border: #333; }
+        
         body, html { 
-            margin: 0; padding: 0; height: 100%; 
-            background: var(--dark-bg); color: var(--neon-green);
-            font-family: 'Orbitron', sans-serif; overflow: hidden;
+            margin: 0; padding: 0; height: 100vh; width: 100vw; 
+            background: var(--bg); color: var(--text);
+            font-family: 'Pixelify Sans', sans-serif;
+            display: flex; overflow: hidden;
         }
 
-        /* Robotic Scanline Effect */
-        body::before {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        /* ⬅️ Left Sidebar: Profile & Active Avatar */
+        .side-left {
+            width: 300px; background: var(--panel);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
         }
 
-        #ui-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; text-shadow: 0 0 10px var(--neon-green);
+        /* ➡️ Right Sidebar: VR Controls & Logs */
+        .side-right {
+            width: 260px; background: var(--panel);
+            border-left: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
         }
 
-        .hud-bracket {
-            border: 2px solid var(--neon-green); padding: 40px;
-            background: rgba(0, 255, 65, 0.05); position: relative;
+        /* 🎮 Center: Bloxd.io Game Frame */
+        .game-viewport { flex: 1; position: relative; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* UI Components */
+        .header-label { 
+            color: var(--primary); font-size: 0.9rem; letter-spacing: 2px; 
+            margin-bottom: 10px; border-bottom: 1px solid #222; padding-bottom: 5px;
+        }
+        
+        model-viewer { 
+            width: 100%; height: 280px; background: #050505; 
+            border-radius: 8px; border: 1px solid #222; margin-bottom: 15px; 
         }
 
-        /* Robotic Corners */
-        .hud-bracket::before, .hud-bracket::after {
-            content: ""; position: absolute; width: 20px; height: 20px; border: 4px solid var(--interface-blue);
+        .data-card {
+            background: #151515; padding: 12px; border-radius: 6px; margin-bottom: 10px;
+            font-size: 0.75rem; border-left: 3px solid var(--primary);
         }
-        .hud-bracket::before { top: -10px; left: -10px; border-right: 0; border-bottom: 0; }
-        .hud-bracket::after { bottom: -10px; right: -10px; border-left: 0; border-top: 0; }
+        .data-card b { color: #666; display: block; text-transform: uppercase; font-size: 0.6rem; margin-bottom: 2px; }
 
-        h1 { letter-spacing: 5px; margin-bottom: 5px; font-size: 2.5rem; }
-        .version { font-family: 'Source Code Pro', monospace; color: var(--interface-blue); font-size: 0.8rem; margin-bottom: 30px; }
-
-        #launch-btn {
-            background: transparent; border: 2px solid var(--neon-green); color: var(--neon-green);
-            padding: 15px 50px; font-family: 'Orbitron', sans-serif; font-weight: bold;
-            cursor: pointer; transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        .btn-action {
+            background: #1a1a1a; color: var(--text); border: 1px solid #333;
+            padding: 12px; margin-bottom: 8px; border-radius: 6px; cursor: pointer;
+            text-align: left; font-family: 'Pixelify Sans', sans-serif; transition: 0.2s;
         }
+        .btn-action:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+        .btn-exit { margin-top: auto; background: #400; color: #ff8888; border-color: #600; }
+        .btn-exit:hover { background: #f00; color: #fff; }
 
-        #launch-btn:hover { background: var(--neon-green); color: black; box-shadow: 0 0 30px var(--neon-green); }
-
-        /* Diagnostic Sidebar */
-        #diagnostics {
-            position: absolute; bottom: 20px; left: 20px; font-family: 'Source Code Pro', monospace;
-            font-size: 10px; text-transform: uppercase; line-height: 1.5; opacity: 0.7;
-        }
-
-        .glitch { animation: glitch-anim 2s infinite; }
-        @keyframes glitch-anim { 0% { opacity: 1; } 50% { opacity: 0.7; } 51% { color: red; } 100% { opacity: 1; } }
+        /* Status Light */
+        .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: #888; }
+        .dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); }
     </style>
 </head>
 <body>
 
-    <div id="ui-container">
-        <div class="hud-bracket">
-            <h1 class="glitch">BLOXD_VR</h1>
-            <div class="version">CORE_OS // REL_v1.3.0 // STATUS: READY</div>
-            
-            <button id="launch-btn" onclick="startBootSequence()">BOOT VR_EMULATOR</button>
+    <!-- ⬅️ PROFILE SIDEBAR -->
+    <aside class="side-left">
+        <div class="header-label">ACTIVE_IDENTITY</div>
+        <model-viewer id="vrPreview" 
+            src="assets/models/skins/Bob.glb" 
+            auto-rotate 
+            camera-controls 
+            exposure="1" 
+            interaction-prompt="none">
+        </model-viewer>
+        
+        <div class="data-card">
+            <b>Avatar Name</b>
+            <span id="charName">Bob</span>
         </div>
-    </div>
+        <div class="data-card">
+            <b>Session ID</b>
+            <span id="sessionID">BVR-9924-X</span>
+        </div>
+        <div class="status-indicator">
+            <div class="dot"></div> VR Handlers Active (WebXR)
+        </div>
+    </aside>
 
-    <div id="diagnostics">
-        [SYS] WEBXR_SUPPORT: DETECTED<br>
-        [SYS] FIRMWARE_SYNC: 90HZ<br>
-        [SYS] HAPTICS_READY: TRUE<br>
-        [SYS] MAPPING_NODE_V3: ACTIVE
-    </div>
+    <!-- 🎮 MAIN GAME WINDOW -->
+    <main class="game-viewport">
+        <iframe src="https://bloxd.io" allow="autoplay; gamepad; xr-spatial-tracking; fullscreen"></iframe>
+    </main>
+
+    <!-- ➡️ VR CONTROLLER SIDEBAR -->
+    <aside class="side-right">
+        <div class="header-label">SESSION_CONTROLS</div>
+        
+        <button class="btn-action" onclick="toggleVR()">Initialize WebXR</button>
+        <button class="btn-action" onclick="document.querySelector('iframe').src+=''">Refresh Game</button>
+        <button class="btn-action" onclick="document.documentElement.requestFullscreen()">Fullscreen Mode</button>
+        
+        <div class="header-label" style="margin-top:20px;">SYSTEM_RESOURCES</div>
+        <div class="data-card">
+            <b>Polyfill Status</b>
+            <span>Integrated (v2.1)</span>
+        </div>
+        <div class="data-card">
+            <b>Input Bridge</b>
+            <span>scripts/input-bridge.js</span>
+        </div>
+        
+        <button class="btn-action btn-exit" onclick="window.location.href='index.html'">Terminiate Session</button>
+    </aside>
 
     <script>
-        function startBootSequence() {
-            const btn = document.getElementById('launch-btn');
-            btn.innerText = "BOOTING...";
-            btn.style.borderColor = "#0080ff";
-            btn.style.color = "#0080ff";
+        // Synchronize with Hub Selection
+        window.addEventListener('load', () => {
+            const activeChar = localStorage.getItem('bloxd_avatar') || 'Bob';
+            document.getElementById('charName').innerText = activeChar;
+            document.getElementById('vrPreview').src = `assets/models/skins/${activeChar}.glb`;
+            
+            // Random Session ID for flavor
+            document.getElementById('sessionID').innerText = 'BVR-' + Math.floor(Math.random()*9000 + 1000) + '-X';
+        });
 
-            setTimeout(() => {
-                // The v1.3.0 Redirect to Bloxd.io
-                window.location.href = "https://bloxd.io";
-            }, 1200);
+        function toggleVR() {
+            // Placeholder for triggering your vr_handler.js logic
+            console.log("BloxdVR: Requesting WebXR Session...");
+            if (typeof initVR === "function") {
+                initVR();
+            } else {
+                alert("VR Handler script (scripts/vr_handler.js) detected. Ensure it is configured for WebXR.");
+            }
         }
     </script>
 </body>

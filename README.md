@@ -1,5 +1,5 @@
-![BloxdVR Logo](android-chrome-512x512.png)
-# 🎮 BloxdVR
+             ![BloxdVR Logo](android-chrome-512x512.png)
+                        # 🎮 BloxdVR
 
 **BloxdVR** is a custom, community-driven virtual reality project that brings the world of [Bloxd.io](https://bloxd.io) into a fully immersive VR experience. This project serves as a VR client and toolkit, enabling head tracking, VR controls, and a true 3D camera view for Bloxd players.
 

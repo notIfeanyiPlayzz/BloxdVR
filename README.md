@@ -16,7 +16,7 @@
 To use BloxdVR, you will need:
 *   A VR-capable browser (Meta Quest Browser, Chrome, or Edge).
 *   A compatible headset (Quest 2/3/Pro, Valve Index, Rift, etc.).
-*   Optional: [Immersive Web Emulator](https://chromewebstore.google.com) for desktop testing.
+*   Optional: [Immersive Web Emulator](https://chromewebstore.google.com/detail/immersive-web-emulator/cgffilbpcibhmcfbgggfhfolhkfbhmik) for desktop testing.
 
 ### Installation / Usage
 1. **Clone the repository:**

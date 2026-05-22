@@ -24,7 +24,7 @@ To use BloxdVR, you will need:
    gh repo clone isiguzoflorence521-gif/BloxdVR
 Use the code with caution.
 
-### 2. Open the project:
+2. Open the project:
 Open the index.html file through a local server (like Live Server for VS Code) or deploy via GitHub Pages.
 🧪 Project Status: Sandbox
 BloxdVR is currently a prototype. It serves as a testing ground for:

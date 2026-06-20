@@ -7,7 +7,7 @@
 
 **BloxdVR** is a custom, community-driven virtual reality project that brings the world of [Bloxd.io](https://bloxd.io) into a fully immersive VR experience. This project serves as a VR client and toolkit, enabling head tracking, VR controls, and a true 3D camera view for Bloxd players.
 
-> **⚠️ Disclaimer:** BloxdVR is an **unofficial** third-party project and is not affiliated with the official Bloxd.io developers. It is part of the custom development ecosystem, including **IQBloxd**, **VBloxd**, and **VRBloxd**.
+> **⚠️ Disclaimer:** BloxdVR is an **unofficial** third-party project and is not affiliated with the official Bloxd.io developers.
 
 ## ✨ Features
 *   **Head Movement Tracking:** Full 360-degree vision using the [WebXR Device API](https://developer.mozilla.org/en-US/docs/Web/API/WebXR_Device_API).

@@ -3,7 +3,7 @@
 ![Static Badge](https://img.shields.io/badge/Platform-Meta__Quest-purple?logo=meta)
 ![Static Badge](https://img.shields.io/badge/Platform-Valve__Index-darkgrey?logo=valve)
 ![Static Badge](https://img.shields.io/badge/Platform-Oculus__Rift-darkgrey?logo=oculus)
-![License](https://img.shields.io/badge/License-MIT-green?logo=license)
+![License](https://img.shields.io/badge/License-MIT-green?logo=license)(./LICENSE)
 ![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-black?logo=github)
 ![Language](https://img.shields.io/badge/Language-JavaScript-yellow?logo=javascript)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)

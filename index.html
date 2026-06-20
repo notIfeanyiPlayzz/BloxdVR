@@ -232,6 +232,18 @@
     <audio id="bgm" loop="" src="assets/music/minecraft-theme_q5K6toI.mp3"></audio>
     <audio id="selectSound" src="assets/music/select.mp3"></audio>
 
+    <!-- 1. Load the polyfill script file you just pulled -->
+    <script src="build/webxr-polyfill.js"></script>
+
+    <!-- 2. Initialize it immediately before loading any game logic -->
+    <script>
+      // This automatically intercepts webxr checks and falls back cleanly
+      const polyfill = new WebXRPolyfill();
+    </script>
+
+    <!-- 3. Load your main BloxdVR engine scripts down here -->
+    <script src="assets/js/main.js"></script>
+
     <script>
       /* ===== Character Registry ===== */
       const characters = [

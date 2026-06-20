@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloxdVR - Bloxd.io Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .status-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .status-box.success {
+            border-left-color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .status-box.error {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 0;
+        }
+
+        button:hover:not(:disabled) {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+        }
+
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 BloxdVR + Bloxd.io Integration</h1>
+        
+        <div id="status" class="status-box">
+            ⏳ Loading...
+        </div>
+
+        <h2>Connection Status</h2>
+        <div id="connectionStatus" class="status-box">
+            <strong>Server:</strong> <span id="serverStatus">Not connected</span><br>
+            <strong>VR Session:</strong> <span id="vrStatus">Inactive</span><br>
+            <strong>Avatar:</strong> <span id="avatarStatus">Not loaded</span>
+        </div>
+
+        <h2>Actions</h2>
+        <button id="connectBtn">Connect to Bloxd.io</button>
+        <button id="enterVRBtn" disabled>Enter VR Mode</button>
+        <button id="disconnectBtn" disabled>Disconnect</button>
+
+        <h2>Server Response</h2>
+        <div class="code-block" id="serverResponse">
+            Waiting for connection...
+        </div>
+
+        <h2>📖 Integration Guide</h2>
+        <div class="info">
+            <p>
+                This example demonstrates how to integrate BloxdVR with Bloxd.io by:
+            </p>
+            <ul>
+                <li>Establishing a WebSocket connection to Bloxd.io server</li>
+                <li>Sending/receiving player data in VR format</li>
+                <li>Syncing avatar position with VR headset tracking</li>
+                <li>Handling real-time multiplayer interactions</li>
+            </ul>
+        </div>
+
+        <h2>Implementation Steps</h2>
+        <div class="code-block">
+// Step 1: Connect to Bloxd.io
+const socket = new WebSocket('wss://bloxd.io/api');
+
+// Step 2: Send VR-compatible player data
+socket.send(JSON.stringify({
+  type: 'player_data',
+  position: { x, y, z },
+  rotation: { x, y, z, w }
+}));
+
+// Step 3: Receive other players' data
+socket.onmessage = (event) => {
+  const playerData = JSON.parse(event.data);
+  updateOtherPlayer(playerData);
+};
+        </div>
+
+        <h2>Next Steps</h2>
+        <div class="info">
+            <ul>
+                <li>Replace connection details with your Bloxd.io server</li>
+                <li>Implement avatar syncing logic</li>
+                <li>Add 6DOF head/hand tracking data to messages</li>
+                <li>Handle player disconnections gracefully</li>
+                <li>Test with real Bloxd.io players</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const serverResponseDiv = document.getElementById('serverResponse');
+        const connectBtn = document.getElementById('connectBtn');
+        const enterVRBtn = document.getElementById('enterVRBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        
+        const serverStatusSpan = document.getElementById('serverStatus');
+        const vrStatusSpan = document.getElementById('vrStatus');
+        const avatarStatusSpan = document.getElementById('avatarStatus');
+
+        let socket = null;
+        let xrSession = null;
+        let xrRefSpace = null;
+        let playerData = {
+            id: null,
+            name: 'VR_Player_' + Math.random().toString(36).substr(2, 9),
+            position: { x: 0, y: 0, z: 0 },
+            rotation: { x: 0, y: 0, z: 0, w: 1 }
+        };
+
+        function updateStatus(message, type = 'info') {
+            statusDiv.textContent = message;
+            statusDiv.className = 'status-box ' + type;
+        }
+
+        function updateServerResponse(data) {
+            serverResponseDiv.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function connectToBloxd() {
+            try {
+                // Note: Replace with actual Bloxd.io server address
+                const serverURL = 'wss://bloxd.io/api/vr'; // Example - update with real server
+                
+                updateStatus('⏳ Connecting to Bloxd.io...', 'info');
+                
+                // For demo purposes, simulate connection
+                setTimeout(() => {
+                    socket = {
+                        send: (data) => {
+                            console.log('Sent to server:', data);
+                            updateServerResponse(JSON.parse(data));
+                        },
+                        close: () => {
+                            socket = null;
+                        }
+                    };
+
+                    // Simulate server response
+                    updateStatus('✅ Connected to Bloxd.io!', 'success');
+                    serverStatusSpan.textContent = '✓ Connected';
+                    serverStatusSpan.style.color = '#4caf50';
+                    
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    enterVRBtn.disabled = false;
+
+                    // Send initial player data
+                    socket.send(JSON.stringify({
+                        type: 'player_join',
+                        player: playerData,
+                        timestamp: Date.now()
+                    }));
+
+                    updateServerResponse({
+                        status: 'connected',
+                        playerId: playerData.name,
+                        message: 'Successfully joined Bloxd.io'
+                    });
+                }, 500);
+
+            } catch (error) {
+                updateStatus(`❌ Connection Failed: ${error.message}`, 'error');
+                serverStatusSpan.textContent = '✗ Failed';
+                console.error('Connection error:', error);
+            }
+        }
+
+        async function enterVR() {
+            try {
+                if (!navigator.xr) {
+                    throw new Error('WebXR not supported');
+                }
+
+                xrSession = await navigator.xr.requestSession('immersive-vr', {
+                    requiredFeatures: ['local-floor'],
+                    optionalFeatures: ['hand-tracking']
+                });
+
+                xrRefSpace = await xrSession.requestReferenceSpace('local-floor');
+                
+                vrStatusSpan.textContent = '✓ Active';
+                vrStatusSpan.style.color = '#4caf50';
+                
+                avatarStatusSpan.textContent = 'Synced (Bob)';
+                avatarStatusSpan.style.color = '#4caf50';
+
+                updateStatus('🥽 VR Mode Active - Syncing with Bloxd.io', 'success');
+                enterVRBtn.disabled = true;
+
+                xrSession.requestAnimationFrame(onXRFrame);
+            } catch (error) {
+                updateStatus(`❌ VR Error: ${error.message}`, 'error');
+                console.error('VR error:', error);
+            }
+        }
+
+        function onXRFrame(time, frame) {
+            const pose = frame.getViewerPose(xrRefSpace);
+
+            if (pose) {
+                // Update player position from VR headset
+                playerData.position = {
+                    x: pose.transform.position.x,
+                    y: pose.transform.position.y,
+                    z: pose.transform.position.z
+                };
+
+                // Update rotation
+                playerData.rotation = {
+                    x: pose.transform.orientation.x,
+                    y: pose.transform.orientation.y,
+                    z: pose.transform.orientation.z,
+                    w: pose.transform.orientation.w
+                };
+
+                // Send to Bloxd.io server
+                if (socket) {
+                    socket.send(JSON.stringify({
+                        type: 'player_update',
+                        playerId: playerData.name,
+                        data: playerData,
+                        timestamp: Date.now()
+                    }));
+                }
+            }
+
+            xrSession.requestAnimationFrame(onXRFrame);
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.close();
+                socket = null;
+            }
+
+            if (xrSession) {
+                xrSession.end();
+                xrSession = null;
+                xrRefSpace = null;
+            }
+
+            serverStatusSpan.textContent = 'Not connected';
+            vrStatusSpan.textContent = 'Inactive';
+            avatarStatusSpan.textContent = 'Not loaded';
+            
+            serverStatusSpan.style.color = 'inherit';
+            vrStatusSpan.style.color = 'inherit';
+            avatarStatusSpan.style.color = 'inherit';
+
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            enterVRBtn.disabled = true;
+
+            updateStatus('Disconnected from Bloxd.io', 'info');
+        }
+
+        connectBtn.addEventListener('click', connectToBloxd);
+        enterVRBtn.addEventListener('click', enterVR);
+        disconnectBtn.addEventListener('click', disconnect);
+
+        updateStatus('Ready to connect', 'info');
+    </script>
+</body>
+</html>

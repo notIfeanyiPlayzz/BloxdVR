@@ -137,7 +137,7 @@ The BloxdVR engine (v1.3.5) now dynamically maps your avatar's clothing to your 
 
 ## 🎯 Quick Links
 
-- **Try it now:** [Live Demo](https://isiguzoflorence521-gif.github.io/BloxdVR/)
+- **Try it now:** [Live Demo](https://notifeanyiplayzz.github.io/BloxdVR/)
 - **Examples:** [/examples](./examples/)
 - **Issues:** [Report a bug](https://github.com/isiguzoflorence521-gif/BloxdVR/issues)
 - **Discussions:** [Join the conversation](https://github.com/isiguzoflorence521-gif/BloxdVR/discussions)

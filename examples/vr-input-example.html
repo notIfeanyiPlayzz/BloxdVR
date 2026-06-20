@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloxdVR - VR Input Handling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        .input-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .controller {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .controller h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .button-state {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .button-state.active {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .position {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        button:hover:not(:disabled) {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .info {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .info h3 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 VR Input Handling</h1>
+        
+        <button id="enterVRBtn" disabled>Enter VR</button>
+        <button id="exitVRBtn" disabled>Exit VR</button>
+
+        <div class="input-display">
+            <div class="controller">
+                <h3>Left Controller</h3>
+                <div id="leftButtons"></div>
+                <div class="position">
+                    <strong>Position:</strong><br>
+                    <span id="leftPos">X: 0, Y: 0, Z: 0</span>
+                </div>
+            </div>
+
+            <div class="controller">
+                <h3>Right Controller</h3>
+                <div id="rightButtons"></div>
+                <div class="position">
+                    <strong>Position:</strong><br>
+                    <span id="rightPos">X: 0, Y: 0, Z: 0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>📖 What This Example Does:</h3>
+            <p>
+                This example demonstrates how to:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Access VR controller inputs</li>
+                <li>Detect button presses (grip, trigger, etc.)</li>
+                <li>Track controller position and orientation</li>
+                <li>Display real-time input state</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                <strong>Try This:</strong> Enter VR and press buttons on your controllers to see the input state update in real-time!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const enterVRBtn = document.getElementById('enterVRBtn');
+        const exitVRBtn = document.getElementById('exitVRBtn');
+        const leftButtonsDiv = document.getElementById('leftButtons');
+        const rightButtonsDiv = document.getElementById('rightButtons');
+
+        let xrSession = null;
+        let xrRefSpace = null;
+
+        // Button names for common controllers
+        const buttonNames = {
+            0: 'Select (Trigger)',
+            1: 'Squeeze (Grip)',
+            2: 'Touchpad/Thumbstick',
+            3: 'Menu',
+            4: 'Button 4',
+            5: 'Button 5'
+        };
+
+        async function checkWebXRSupport() {
+            try {
+                if (!navigator.xr) {
+                    throw new Error('WebXR not supported');
+                }
+                const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                enterVRBtn.disabled = !isSupported;
+            } catch (error) {
+                console.error('WebXR Check Error:', error);
+            }
+        }
+
+        async function enterVR() {
+            try {
+                xrSession = await navigator.xr.requestSession('immersive-vr', {
+                    requiredFeatures: ['local-floor'],
+                    optionalFeatures: ['hand-tracking']
+                });
+
+                xrRefSpace = await xrSession.requestReferenceSpace('local-floor');
+                
+                enterVRBtn.disabled = true;
+                exitVRBtn.disabled = false;
+
+                xrSession.requestAnimationFrame(onXRFrame);
+            } catch (error) {
+                console.error('Error entering VR:', error);
+            }
+        }
+
+        function exitVR() {
+            if (xrSession) {
+                xrSession.end();
+                xrSession = null;
+                xrRefSpace = null;
+            }
+            enterVRBtn.disabled = false;
+            exitVRBtn.disabled = true;
+        }
+
+        function updateControllerDisplay(inputSource, side) {
+            const buttonDiv = side === 'left' ? leftButtonsDiv : rightButtonsDiv;
+            const posDiv = document.getElementById(side + 'Pos');
+
+            if (inputSource) {
+                // Update buttons
+                let buttonsHTML = '';
+                if (inputSource.gamepad && inputSource.gamepad.buttons) {
+                    inputSource.gamepad.buttons.forEach((button, index) => {
+                        const isPressed = button.pressed;
+                        const buttonName = buttonNames[index] || `Button ${index}`;
+                        const className = isPressed ? 'button-state active' : 'button-state';
+                        buttonsHTML += `<div class="${className}">
+                            ${buttonName}: ${isPressed ? '✓ PRESSED' : 'Released'}
+                            (Value: ${button.value.toFixed(2)})
+                        </div>`;
+                    });
+                }
+                buttonDiv.innerHTML = buttonsHTML;
+
+                // Update position
+                if (inputSource.gripSpace) {
+                    posDiv.textContent = 'Controller present (position data available)';
+                }
+            }
+        }
+
+        function onXRFrame(time, frame) {
+            const inputs = frame.session.inputSources;
+
+            // Clear previous display
+            leftButtonsDiv.innerHTML = '<div class="button-state">No input detected</div>';
+            rightButtonsDiv.innerHTML = '<div class="button-state">No input detected</div>';
+
+            // Process each input source
+            inputs.forEach((inputSource, index) => {
+                const side = inputSource.handedness; // 'left', 'right', or 'none'
+                
+                if (side === 'left' || side === 'right') {
+                    updateControllerDisplay(inputSource, side);
+
+                    // Get pose if grip space is available
+                    if (inputSource.gripSpace) {
+                        const pose = frame.getPose(inputSource.gripSpace, xrRefSpace);
+                        if (pose) {
+                            const pos = pose.transform.position;
+                            const posDiv = document.getElementById(side + 'Pos');
+                            posDiv.textContent = `X: ${pos.x.toFixed(2)}, Y: ${pos.y.toFixed(2)}, Z: ${pos.z.toFixed(2)}`;
+                        }
+                    }
+                }
+            });
+
+            xrSession.requestAnimationFrame(onXRFrame);
+        }
+
+        enterVRBtn.addEventListener('click', enterVR);
+        exitVRBtn.addEventListener('click', exitVR);
+        window.addEventListener('load', checkWebXRSupport);
+    </script>
+</body>
+</html>

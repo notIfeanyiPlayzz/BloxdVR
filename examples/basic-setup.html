@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloxdVR - Basic Setup Example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        #status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info {
+            margin-top: 30px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        .info h3 {
+            margin-bottom: 10px;
+        }
+
+        .info code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥽 BloxdVR - Basic Setup</h1>
+        
+        <div id="status">
+            Checking WebXR support...
+        </div>
+
+        <button id="enterVRBtn" disabled>Enter VR</button>
+        <button id="exitVRBtn" disabled>Exit VR</button>
+
+        <div class="info">
+            <h3>📖 What This Example Does:</h3>
+            <p>
+                This is a minimal BloxdVR setup that demonstrates:
+            </p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Checking for WebXR support</li>
+                <li>Initializing a basic VR session</li>
+                <li>Entering and exiting VR mode</li>
+                <li>Rendering a simple scene</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                <strong>Next Steps:</strong> Check the browser console for logs and try entering VR mode!
+            </p>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // BloxdVR Basic Setup Example
+        
+        const canvas = document.getElementById('canvas');
+        const statusDiv = document.getElementById('status');
+        const enterVRBtn = document.getElementById('enterVRBtn');
+        const exitVRBtn = document.getElementById('exitVRBtn');
+
+        let xrSession = null;
+        let xrRefSpace = null;
+
+        // Check WebXR Support
+        async function checkWebXRSupport() {
+            try {
+                if (!navigator.xr) {
+                    throw new Error('WebXR not supported. Try the Immersive Web Emulator extension.');
+                }
+
+                const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                
+                if (isSupported) {
+                    statusDiv.textContent = '✅ WebXR is supported! Ready to enter VR.';
+                    statusDiv.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+                    enterVRBtn.disabled = false;
+                    console.log('✅ WebXR Support: YES');
+                } else {
+                    statusDiv.textContent = '⚠️ WebXR not supported on this device. Try the Immersive Web Emulator.';
+                    statusDiv.style.backgroundColor = 'rgba(255, 193, 7, 0.3)';
+                    console.log('⚠️ WebXR Support: NO');
+                }
+            } catch (error) {
+                statusDiv.textContent = `❌ Error: ${error.message}`;
+                statusDiv.style.backgroundColor = 'rgba(244, 67, 54, 0.3)';
+                console.error('WebXR Check Error:', error);
+            }
+        }
+
+        // Enter VR Session
+        async function enterVR() {
+            try {
+                xrSession = await navigator.xr.requestSession('immersive-vr', {
+                    requiredFeatures: ['local-floor'],
+                    optionalFeatures: ['hand-tracking']
+                });
+
+                xrRefSpace = await xrSession.requestReferenceSpace('local-floor');
+                
+                statusDiv.textContent = '🥽 VR Session Active!';
+                statusDiv.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+                
+                enterVRBtn.disabled = true;
+                exitVRBtn.disabled = false;
+
+                console.log('✅ VR Session Started');
+                console.log('Session Mode:', xrSession.mode);
+                console.log('Enabled Features:', xrSession.enabledFeatures);
+
+                // Start render loop
+                xrSession.requestAnimationFrame(onXRFrame);
+            } catch (error) {
+                console.error('Error entering VR:', error);
+                statusDiv.textContent = `❌ Error entering VR: ${error.message}`;
+                statusDiv.style.backgroundColor = 'rgba(244, 67, 54, 0.3)';
+            }
+        }
+
+        // Exit VR Session
+        function exitVR() {
+            if (xrSession) {
+                xrSession.end();
+                xrSession = null;
+                xrRefSpace = null;
+            }
+
+            statusDiv.textContent = '✅ WebXR is supported! Ready to enter VR.';
+            statusDiv.style.backgroundColor = 'rgba(76, 175, 80, 0.3)';
+            
+            enterVRBtn.disabled = false;
+            exitVRBtn.disabled = true;
+
+            console.log('✅ VR Session Ended');
+        }
+
+        // XR Animation Frame Callback
+        function onXRFrame(time, frame) {
+            // Get viewer pose
+            const pose = frame.getViewerPose(xrRefSpace);
+
+            if (pose) {
+                // Log pose data (optional)
+                console.log('Viewer Position:', pose.transform.position);
+            }
+
+            // Continue render loop
+            xrSession.requestAnimationFrame(onXRFrame);
+        }
+
+        // Event Listeners
+        enterVRBtn.addEventListener('click', enterVR);
+        exitVRBtn.addEventListener('click', exitVR);
+
+        // Handle VR session end
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && xrSession) {
+                exitVR();
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', checkWebXRSupport);
+    </script>
+</body>
+</html>

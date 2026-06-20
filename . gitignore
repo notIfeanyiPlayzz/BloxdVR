@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build/output folders
+dist/
+build/
+out/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Cache
+.cache/
+
+# Coverage
+coverage/

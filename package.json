@@ -4,6 +4,13 @@
   "description": "VR support for Bloxd",
   "main": "index.js",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notIfeanyiPlayzz/BloxdVR.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "dependencies": {
     "gl-matrix": "^3.4.3",
     "webxr-polyfill": "^2.0.3"

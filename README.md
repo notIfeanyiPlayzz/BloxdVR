@@ -38,7 +38,7 @@ To use BloxdVR, you will need:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/isiguzoflorence521-gif/BloxdVR.git
+   git clone https://github.com/notIfeanyiPlayzz/BloxdVR.git
    cd BloxdVR
    ```
 

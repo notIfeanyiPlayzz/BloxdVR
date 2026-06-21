@@ -4,6 +4,7 @@
 ![Static Badge](https://img.shields.io/badge/Platform-Valve__Index-darkgrey?logo=valve)
 ![Static Badge](https://img.shields.io/badge/Platform-Oculus__Rift-darkgrey?logo=oculus)
 ![Static Badge](https://img.shields.io/badge/Platform-HTC_VIVE-blue?logo=steam&logoColor=white)
+![Static Badge](https://img.shields.io/badge/Platform-Pimax-blue?logo=steam)
 ![Static Badge](https://img.shields.io/badge/Standard-OpenXR-lightgrey?logo=khronosgroup&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?logo=license)
 ![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-black?logo=github)

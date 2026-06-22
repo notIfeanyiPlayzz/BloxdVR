@@ -10,7 +10,7 @@
 ![GitHub](https://img.shields.io/badge/GitHub-Open%20Source-black?logo=github)
 ![Language](https://img.shields.io/badge/Language-JavaScript-yellow?logo=javascript)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
-![Version](https://img.shields.io/badge/Version-1.3.5-blue)
+![Version](https://img.shields.io/badge/Version-1.3.6-blue)
 ![WebXR](https://img.shields.io/badge/WebXR-Ready-important?logo=webassembly)
 
 **BloxdVR** is a custom, community-driven virtual reality project that brings the world of [Bloxd.io](https://bloxd.io) into a fully immersive VR experience. This project serves as a VR client and integration toolkit for bringing WebXR capabilities to the Bloxd.io ecosystem.

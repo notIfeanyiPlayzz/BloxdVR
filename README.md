@@ -93,7 +93,7 @@ We welcome contributions! To contribute to BloxdVR:
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
-## 👤 Supported VR Avatars (v1.3.5)
+## 👤 Supported VR Avatars (v1.3.1)
 
 | Name    | Appearance                                | Gender | Status |
 | :------ | :---------------------------------------- | :----- | :----- |
@@ -108,7 +108,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ## 👕 VR-Synced Clothing (World Presence)
 
-The BloxdVR engine (v1.3.5) now dynamically maps your avatar's clothing to your VR hand/arm meshes:
+The BloxdVR engine (v1.3.1) now dynamically maps your avatar's clothing to your VR hand/arm meshes:
 
 **Upper Body:**
 *   **Hoodie:** Red texture, default full-length sleeves, brown belt.

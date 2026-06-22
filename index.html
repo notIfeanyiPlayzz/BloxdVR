@@ -10,8 +10,7 @@
     <!-- 🖼️ Standard Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
     <!-- 📱 Android / PWA Icons -->
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
@@ -233,22 +232,21 @@
     <audio id="selectSound" src="assets/music/select.mp3"></audio>
 
     <!-- 1. Load the polyfill script file -->
-<script src="scripts/webxr-polyfill.js"></script>
+    <script src="scripts/webxr-polyfill.js"></script>
 
-<!-- 2. Initialize conditionally before your game logic -->
-<script>
-  // Only initialize if the browser completely lacks native WebXR support
-  if (!navigator.xr) {
-    console.log("Native WebXR not found. Initializing Polyfill fallback...");
-    var polyfill = new WebXRPolyfill();
-  } else {
-    console.log("Native WebXR detected. Skipping Polyfill to maximize performance.");
-  }
-</script>
+    <!-- 2. Initialize conditionally before your game logic -->
+    <script>
+      // Only initialize if the browser completely lacks native WebXR support
+      if (!navigator.xr) {
+        console.log("Native WebXR not found. Initializing Polyfill fallback...");
+        var polyfill = new WebXRPolyfill();
+      } else {
+        console.log("Native WebXR detected. Skipping Polyfill to maximize performance.");
+      }
+    </script>
 
-<!-- 3. Load your main BloxdVR engine scripts -->
-<script src="assets/js/main.js"></script>
-
+    <!-- 3. Load your main BloxdVR engine scripts -->
+    <script src="assets/js/main.js"></script>
 
     <script>
       /* ===== Character Registry ===== */

@@ -172,8 +172,11 @@ Have questions or want to share your creations?
 
 ## Troubleshooting
 
-### Models and Fonts Do Not Work on index.html
-When you download the ZIP file from the BloxdVR Releases page and open `index.html` directly, the model viewer stays blank and the custom fonts do not load. This happens because modern browsers block local files from fetching external assets due to CORS security restrictions. To fix this, you must serve the folder using a local web server (such as Python or VS Code Live Server) rather than double-clicking the file.
+* **Models and Fonts Do Not Work on index.html**
+  * When you download the ZIP file from the BloxdVR Releases page and open `index.html` directly, the model viewer stays blank and the custom fonts do not load. 
+  * This happens because modern browsers block local files from fetching external assets due to CORS security restrictions. 
+  * To fix this, you must serve the folder using a local web server (such as Python or VS Code Live Server) rather than double-clicking the file.
+
 
 ---
 

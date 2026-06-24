@@ -170,6 +170,11 @@ Have questions or want to share your creations?
 - 🐛 **Issues:** [Report bugs here](https://github.com/isiguzoflorence521-gif/BloxdVR/issues)
 - ⭐ **Stars:** Help us grow by starring the project!
 
+## Troubleshooting
+
+### Models and Fonts Do Not Work on index.html
+When you download the ZIP file from the BloxdVR Releases page and open `index.html` directly, the model viewer stays blank and the custom fonts do not load. This happens because modern browsers block local files from fetching external assets due to CORS security restrictions. To fix this, you must serve the folder using a local web server (such as Python or VS Code Live Server) rather than double-clicking the file.
+
 ---
 
 **Ready to enter the voxel metaverse in VR?** 🚀

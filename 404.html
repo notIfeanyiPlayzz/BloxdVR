@@ -6,8 +6,8 @@
     <title>404 | BloxdVR Sync Lost</title>
     
     <!-- 🖼️ Assets Mapping -->
-    <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/assets/icons/favicon.ico">
+    <link href="https://googleapis.com" rel="stylesheet">
 
     <style>
         :root { --primary: #2ecc00; --bg: #050505; --panel: #111; }
@@ -57,9 +57,9 @@
         <p>The coordinates you entered do not exist in the <b>BloxdVR</b> database. The chunk failed to load or the link has been corrupted.</p>
         
         <div class="btn-group">
-            <a href="index.html" class="btn btn-home">Return to Hub</a>
+            <a href="/index.html" class="btn btn-home">Return to Hub</a>
             <!-- 🐛 Directly links to your repository issues page -->
-            <a href="https://github.com/isiguzoflorence521-gif/BloxdVR/issues" target="_blank" class="btn btn-bug">Report Bug</a>
+            <a href="https://github.com" target="_blank" class="btn btn-bug">Report Bug</a>
         </div>
     </div>
 
@@ -69,6 +69,15 @@
         let text = "";
         for(let i=0; i<2000; i++) { text += Math.round(Math.random()); }
         bin.innerText = text;
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('BloxdVR Sync Active:', reg.scope))
+                    .catch(err => console.error('BloxdVR Sync Failure:', err));
+            });
+        }
     </script>
 </body>
 </html>

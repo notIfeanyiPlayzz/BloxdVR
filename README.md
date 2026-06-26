@@ -177,6 +177,19 @@ Have questions or want to share your creations?
   * This happens because modern browsers block local files from fetching external assets due to CORS security restrictions. 
   * To fix this, you must serve the folder using a local web server (such as Python or VS Code Live Server) rather than double-clicking the file.
 
+### "WebXR is not available"
+- Make sure you're using a WebXR-capable browser
+- Try the [Immersive Web Emulator](https://chromewebstore.google.com/detail/immersive-web-emulator/cgffilbpcibhmcfbgggfhfolhkfbhmik) for desktop testing
+- Check your VR headset is connected and detected
+
+### "BloxdVR library not found"
+- Ensure the BloxdVR library files are in the parent directory
+- Check your file paths in the HTML `<script>` tags
+
+### Controller not detected
+- Try re-pairing your VR controllers
+- Check that your headset's firmware is up-to-date
+- Use the Immersive Web Emulator to simulate controllers
 
 ---
 

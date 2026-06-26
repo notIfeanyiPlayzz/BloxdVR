@@ -1,27 +1,19 @@
-name: Build and Publish to Meta Quest
+name: Build & Deploy to Quest
 
 on:
   push:
-    branches:
-      - main  # Triggers the pipeline when pushing code to the main branch
+    branches: [ main ]
 
 jobs:
-  buildAndPublish:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          lfs: true  # Ensures large game assets are downloaded correctly
+          lfs: true
 
-      - name: Cache Unity Project
-        uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-Android-${{ hashFiles('Assets/**', 'Packages/**') }}
-
-      # 1. Build the Android APK using Game-CI
-      - name: Build Unity Application (Android)
+      - name: Build Android App
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -33,12 +25,12 @@ jobs:
           androidKeyaliasName: ${{ secrets.KEY_ALIAS }}
           androidKeyaliasPass: ${{ secrets.KEY_PASSWORD }}
 
-      # 2. Upload the compiled APK to the Meta Horizon Store
-      - name: Upload Build to Meta Quest Store
-        uses: RageAgainstThePixel/upload-meta-quest-build@v2
+      - name: Meta Store Upload
+        uses: buildalon/upload-meta-quest-build@v1
         with:
           appId: ${{ secrets.META_APP_ID }}
           appSecret: ${{ secrets.META_APP_SECRET }}
-          buildDir: 'build/Android'  # Path to the folder containing your generated APK
-          releaseChannel: 'ALPHA'    # Choices: ALPHA, BETA, RC, or PRODUCTION
+          buildDir: 'build/Android'
+          releaseChannel: 'ALPHA'
+
 

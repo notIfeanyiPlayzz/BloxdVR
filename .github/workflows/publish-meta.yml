@@ -8,7 +8,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           lfs: true
@@ -25,12 +25,15 @@ jobs:
           androidKeyaliasName: ${{ secrets.KEY_ALIAS }}
           androidKeyaliasPass: ${{ secrets.KEY_PASSWORD }}
 
+      # 🔍 CRITICAL FIX: Installs Meta's official upload tool backend
+      - name: Setup Meta OVR Platform Util
+        uses: RageAgainstThePixel/setup-ovr-platform-util@v1
+
+      # 🚀 Uploads the generated file
       - name: Meta Store Upload
-        uses: buildalon/upload-meta-quest-build@v1
+        uses: RageAgainstThePixel/upload-meta-quest-build@v2
         with:
           appId: ${{ secrets.META_APP_ID }}
           appSecret: ${{ secrets.META_APP_SECRET }}
           buildDir: 'build/Android'
           releaseChannel: 'ALPHA'
-
-

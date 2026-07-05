@@ -166,15 +166,26 @@
         cursor: pointer;
       }
 
-      .launch {
+      .button-group {
         position: absolute;
         bottom: 20px;
         right: 20px;
-        font-size: 1.2rem;
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
       }
-      .launch:hover {
+
+      .launch, .jobs {
+        font-size: 1.2rem;
+        padding: 8px 15px;
+        text-align: center;
+        text-decoration: none;
+      }
+
+      .launch:hover, .jobs:hover {
         animation: glitch 0.25s infinite;
       }
+
       @keyframes glitch {
         0% {
           transform: translate(1px, -1px);
@@ -221,7 +232,10 @@
         <model-viewer id="viewer" auto-rotate="" camera-controls=""></model-viewer>
         <div class="loader" id="loader"></div>
 
-        <button class="launch" id="launchVR">Launch VR Mode</button>
+        <div class="button-group">
+          <button class="launch" id="launchVR">🚀 Launch VR Mode</button>
+          <a href="jobs.html" class="jobs" style="background: #000; color: var(--accent); border: 1px solid var(--accent); padding: 6px 10px; display: block; text-decoration: none; cursor: pointer;">💼 Apply for a Job</a>
+        </div>
 
         <div id="xrStatus"></div>
       </div>

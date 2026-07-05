@@ -30,7 +30,7 @@ jobs:
         uses: RageAgainstThePixel/setup-ovr-platform-util@v1
 
       # 🚀 Uploads the generated file
-      - name: Meta Store Upload
+      - name: Upload Meta Quest Build
         uses: RageAgainstThePixel/upload-meta-quest-build@v2
         with:
           appId: ${{ secrets.META_APP_ID }}

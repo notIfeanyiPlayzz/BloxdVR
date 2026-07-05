@@ -26,7 +26,7 @@ jobs:
           androidKeyaliasPass: ${{ secrets.KEY_PASSWORD }}
 
       # 🔍 CRITICAL FIX: Installs Meta's official upload tool backend
-      - name: Setup Meta OVR Platform Util
+      - name: Setup OVR Platform Utility
         uses: RageAgainstThePixel/setup-ovr-platform-util@v1
 
       # 🚀 Uploads the generated file

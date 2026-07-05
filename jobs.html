@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BloxdVR - Job Opportunities</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding-top: 30px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .jobs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .job-card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .job-card .salary {
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .job-card .category {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        .job-card p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .apply-btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .apply-btn:hover {
+            background: #764ba2;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+
+        .back-btn:hover {
+            background: transparent;
+            color: white;
+        }
+
+        .contact-section {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .contact-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .contact-section p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .contact-links a {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .contact-links a:hover {
+            background: #764ba2;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            padding-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            .jobs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+
+        <header>
+            <h1>🥽 BloxdVR Careers</h1>
+            <p>Join us in building the future of immersive VR on the web!</p>
+        </header>
+
+        <div class="jobs-grid">
+            <!-- Technical Roles -->
+            <div class="job-card">
+                <span class="category">Technical</span>
+                <h2>VR/WebXR Developer</h2>
+                <div class="salary">$80,000 - $150,000/year</div>
+                <p>Maintain core BloxdVR library, optimize performance for different headsets, and implement new WebXR features.</p>
+                <button class="apply-btn" onclick="applyJob('VR/WebXR Developer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Technical</span>
+                <h2>JavaScript Performance Engineer</h2>
+                <div class="salary">$100,000 - $160,000/year</div>
+                <p>Optimize rendering pipeline, memory optimization, and profiling for peak VR performance.</p>
+                <button class="apply-btn" onclick="applyJob('JavaScript Performance Engineer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Technical</span>
+                <h2>Full-Stack Developer</h2>
+                <div class="salary">$85,000 - $140,000/year</div>
+                <p>Build marketplace infrastructure, hosting platform backend, and API development.</p>
+                <button class="apply-btn" onclick="applyJob('Full-Stack Developer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Technical</span>
+                <h2>DevOps/Infrastructure Engineer</h2>
+                <div class="salary">$90,000 - $150,000/year</div>
+                <p>Cloud infrastructure management, CI/CD pipeline, and server optimization.</p>
+                <button class="apply-btn" onclick="applyJob('DevOps/Infrastructure Engineer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Technical</span>
+                <h2>3D Graphics Programmer</h2>
+                <div class="salary">$90,000 - $170,000/year</div>
+                <p>Shader development, mesh optimization, and visual effects for immersive VR experiences.</p>
+                <button class="apply-btn" onclick="applyJob('3D Graphics Programmer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Technical</span>
+                <h2>QA/Testing Engineer</h2>
+                <div class="salary">$60,000 - $110,000/year</div>
+                <p>VR testing automation, cross-platform testing, and performance testing.</p>
+                <button class="apply-btn" onclick="applyJob('QA/Testing Engineer')">Apply Now</button>
+            </div>
+
+            <!-- Product & Design -->
+            <div class="job-card">
+                <span class="category">Product</span>
+                <h2>Product Manager</h2>
+                <div class="salary">$90,000 - $150,000/year</div>
+                <p>Roadmap planning, feature prioritization, and user research for BloxdVR.</p>
+                <button class="apply-btn" onclick="applyJob('Product Manager')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Design</span>
+                <h2>UX/UI Designer</h2>
+                <div class="salary">$70,000 - $130,000/year</div>
+                <p>VR interface design, documentation design, and dashboard creation.</p>
+                <button class="apply-btn" onclick="applyJob('UX/UI Designer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Product</span>
+                <h2>Technical Writer</h2>
+                <div class="salary">$55,000 - $100,000/year</div>
+                <p>Create documentation, tutorials, and API documentation for developers.</p>
+                <button class="apply-btn" onclick="applyJob('Technical Writer')">Apply Now</button>
+            </div>
+
+            <!-- Business & Operations -->
+            <div class="job-card">
+                <span class="category">Business</span>
+                <h2>Business Development Manager</h2>
+                <div class="salary">$70,000 - $120,000/year</div>
+                <p>Studio partnerships, enterprise deals, and sponsorship management.</p>
+                <button class="apply-btn" onclick="applyJob('Business Development Manager')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Business</span>
+                <h2>Sales Engineer</h2>
+                <div class="salary">$75,000 - $140,000/year</div>
+                <p>Consulting sales, client support, and custom integrations.</p>
+                <button class="apply-btn" onclick="applyJob('Sales Engineer')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Community</span>
+                <h2>Community Manager</h2>
+                <div class="salary">$50,000 - $90,000/year</div>
+                <p>GitHub discussions moderation, community engagement, and event organization.</p>
+                <button class="apply-btn" onclick="applyJob('Community Manager')">Apply Now</button>
+            </div>
+
+            <!-- Specialized -->
+            <div class="job-card">
+                <span class="category">Specialized</span>
+                <h2>VR Consultant</h2>
+                <div class="salary">$100 - $300/hour</div>
+                <p>Client consulting, custom VR experiences, and performance optimization.</p>
+                <button class="apply-btn" onclick="applyJob('VR Consultant')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Specialized</span>
+                <h2>Course Instructor</h2>
+                <div class="salary">Variable (30-70% revenue share)</div>
+                <p>Create educational content, build online courses, and lead workshops.</p>
+                <button class="apply-btn" onclick="applyJob('Course Instructor')">Apply Now</button>
+            </div>
+
+            <div class="job-card">
+                <span class="category">Business</span>
+                <h2>Marketing Manager</h2>
+                <div class="salary">$65,000 - $120,000/year</div>
+                <p>Content marketing, social media strategy, and growth campaigns.</p>
+                <button class="apply-btn" onclick="applyJob('Marketing Manager')">Apply Now</button>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h2>Interested in Working with Us?</h2>
+            <p>Whether you're looking for a full-time position, freelance opportunity, or partnership, we'd love to hear from you!</p>
+            <p>BloxdVR is a fully remote, open-source project. We believe in flexible work arrangements and supporting talented individuals worldwide.</p>
+            
+            <div class="contact-links">
+                <a href="https://github.com/notIfeanyiPlayzz/BloxdVR" target="_blank">GitHub</a>
+                <a href="https://github.com/notIfeanyiPlayzz/BloxdVR/discussions" target="_blank">Discussions</a>
+                <a href="mailto:isiguzoflorence521@gmail.com">Email</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>BloxdVR © 2026 | Open Source WebXR Toolkit</p>
+        </footer>
+    </div>
+
+    <script>
+        function applyJob(jobTitle) {
+            alert(`Thank you for your interest in the ${jobTitle} position!\n\nPlease reach out to us via:\n📧 Email: isiguzoflorence521@gmail.com\n🐙 GitHub Discussions: https://github.com/notIfeanyiPlayzz/BloxdVR/discussions\n\nShare your resume and tell us why you'd be a great fit!`);
+        }
+    </script>
+</body>
+</html>

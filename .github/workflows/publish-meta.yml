@@ -13,8 +13,8 @@ jobs:
         with:
           lfs: true
 
-      - name: Build Android App
-        uses: game-ci/unity-builder@v4
+      - name: Unity - Builder
+        uses: game-ci/unity-builder@v5.0.0
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
@@ -27,11 +27,11 @@ jobs:
 
       # 🔍 CRITICAL FIX: Installs Meta's official upload tool backend
       - name: Setup OVR Platform Utility
-        uses: RageAgainstThePixel/setup-ovr-platform-util@v1
+        uses: RageAgainstThePixel/setup-ovr-platform-util@v1.2.0
 
       # 🚀 Uploads the generated file
       - name: Upload Meta Quest Build
-        uses: RageAgainstThePixel/upload-meta-quest-build@v2
+        uses: RageAgainstThePixel/upload-meta-quest-build@v2.2.0
         with:
           appId: ${{ secrets.META_APP_ID }}
           appSecret: ${{ secrets.META_APP_SECRET }}

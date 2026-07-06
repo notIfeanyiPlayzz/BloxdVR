@@ -22,21 +22,21 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 📦 Step 3: Pull down Web App compilation wrapper
+      # 📦 Step 3: Setup Node.js 
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      # 🛠️ Step 4: Packages the app directly without stopping for prompts
+      # 🛠️ Step 4: Link internal runner SDK paths and compile without global installation freezes
       - name: Package Web Link to APK
         run: |
-          # 💡 --acceptDefaults automatically uses manifest data and completely skips terminal questions
-          bubblewrap init --manifest="https://notifeanyiplayzz.github.io/BloxdVR/" --metaquest --metaquest_app_id="${{ secrets.META_APP_ID }}" --signingKeyPath="user.keystore" --acceptDefaults
-          bubblewrap build --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
+          # Configure bubblewrap with the system paths from our previous steps to bypass the setup wizard entirely
+          npx @bubblewrap/cli updateConfig --jdkPath="$JAVA_HOME" --androidSdkPath="$ANDROID_HOME"
+          
+          # Initialize and build using defaults from your manifest metadata
+          npx @bubblewrap/cli init --manifest="https://notifeanyiplayzz.github.io/BloxdVR/" --metaquest --metaquest_app_id="${{ secrets.META_APP_ID }}" --signingKeyPath="user.keystore" --acceptDefaults
+          npx @bubblewrap/cli build --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 

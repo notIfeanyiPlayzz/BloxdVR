@@ -27,8 +27,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Bubblewrap
+      - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
+
+      # ✅ IMPORTANT: NO updateConfig (prevents interactive prompt)
+      # Bubblewrap already reads config from your repo
 
       - name: Generate Android Keystore
         run: |
@@ -40,20 +43,7 @@ jobs:
             -keyalg RSA \
             -keysize 2048 \
             -validity 10000 \
-            -dname "CN=BloxdVR,O=BloxdVR,C=US"
-
-      - name: Upload Keystore Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: signing-keystore
-          path: user.keystore
-
-      - name: Configure Bubblewrap
-        run: |
-          bubblewrap updateConfig \
-          --jdkPath="$JAVA_HOME" \
-          --androidSdkPath="$ANDROID_SDK_ROOT" \
-          --silent
+            -dname "CN=MetaQuestApp,O=Dev,C=US"
 
       - name: Build APK
         run: |
@@ -69,11 +59,11 @@ jobs:
           APK=$(find . -name "*release*.apk" | head -n 1)
 
           if [ -z "$APK" ]; then
-            echo "No APK found!"
+            echo "❌ APK not found"
             exit 1
           fi
 
-          echo "Found APK: $APK"
+          echo "✅ APK found: $APK"
           cp "$APK" build/Android/bloxdvr.apk
 
       - name: Setup Meta Quest CLI

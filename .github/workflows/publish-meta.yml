@@ -23,8 +23,8 @@ jobs:
         uses: android-actions/setup-android@v4.0.1
 
       # 📦 Step 3: Setup Node.js and pull in Meta's PWA packager wrapper
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v6.0.4
+      - name: Setup Node.js environment and Bubblewrap
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
       - name: Install Bubblewrap CLI

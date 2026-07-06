@@ -17,24 +17,36 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: '17'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Decode Android Keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Generate Android Keystore
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > user.keystore
+          keytool -genkeypair \
+            -keystore user.keystore \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.KEY_PASSWORD }}" \
+            -alias "${{ secrets.KEY_ALIAS }}" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=BloxdVR,O=BloxdVR,C=US"
+
+      - name: Upload Keystore Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signing-keystore
+          path: user.keystore
 
       - name: Configure Bubblewrap
         run: |
@@ -42,12 +54,11 @@ jobs:
             --jdkPath="$JAVA_HOME" \
             --androidSdkPath="$ANDROID_SDK_ROOT"
 
-      # Assumes a Bubblewrap project already exists in the repo.
-      # If not, initialize one locally and commit it first.
       - name: Build APK
         run: |
           bubblewrap build \
             --signingKeyPath=user.keystore \
+            --signingKeyAlias="${{ secrets.KEY_ALIAS }}" \
             --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" \
             --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
 
@@ -55,7 +66,13 @@ jobs:
         run: |
           mkdir -p build/Android
           APK=$(find . -name "*release*.apk" | head -n 1)
-          echo "APK found: $APK"
+
+          if [ -z "$APK" ]; then
+            echo "No APK found!"
+            exit 1
+          fi
+
+          echo "Found APK: $APK"
           cp "$APK" build/Android/bloxdvr.apk
 
       - name: Setup Meta Quest CLI

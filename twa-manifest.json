@@ -1,0 +1,20 @@
+{
+  "packageId": "com.bloxdvr.app",
+  "host": "https://notifeanyiplayzz.github.io/BloxdVR/",
+  "name": "BloxdVR",
+  "launcherName": "BloxdVR",
+  "display": "standalone",
+  "themeColor": "#000000",
+  "navigationColor": "#000000",
+  "backgroundColor": "#000000",
+  "startUrl": "/",
+  "iconUrl": "https://notifeanyiplayzz.github.io/BloxdVR/favicon.ico",
+  "signingKey": {
+    "path": "android.keystore",
+    "alias": "bloxdvr"
+  },
+  "enableNotifications": false,
+  "enableSiteSettingsShortcut": false,
+  "minSdkVersion": 21,
+  "orientation": "landscape"
+}

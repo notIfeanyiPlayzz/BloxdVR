@@ -1,4 +1,4 @@
-name: Build & Deploy to Quest
+name: Package & Deploy WebXR PWA to Quest Store
 
 on:
   push:
@@ -10,26 +10,46 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
-      - name: Unity - Builder
-        uses: game-ci/unity-builder@v5.0.0
+      # ☕ Step 1: Setup Java JDK required to compile and sign Android bundles
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 🤖 Step 2: Set up official Android toolset pipelines
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 📦 Step 3: Setup Node.js and pull in Meta's PWA packager wrapper
+      - name: Setup Node.js & Bubblewrap
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      # 🛠️ Step 4: Convert your live WebXR URL into a Meta Quest store-ready APK
+      - name: Package Web Link to APK
+        run: |
+          # 💡 Replace the --manifest URL below with your live website's configuration path
+          bubblewrap init --manifest="https://notifeanyiplayzz.github.io/BloxdVR/" --metaquest --metaquest_app_id="${{ secrets.META_APP_ID }}" --signingKeyPath="user.keystore"
+          bubblewrap build --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          targetPlatform: Android
-          androidKeystoreName: user.keystore
-          androidKeystoreBase64: ${{ secrets.KEYSTORE_BASE64 }}
-          androidKeystorePass: ${{ secrets.KEYSTORE_PASSWORD }}
-          androidKeyaliasName: ${{ secrets.KEY_ALIAS }}
-          androidKeyaliasPass: ${{ secrets.KEY_PASSWORD }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
-      # 🔍 CRITICAL FIX: Installs Meta's official upload tool backend
+      # 📌 Step 5: Route the built package to the uploader directory
+      - name: Stage Android Package
+        run: |
+          mkdir -p build/Android
+          cp ./app-release-signed.apk ./build/Android/bloxdvr.apk
+
+      # 🔍 Step 6: Install official Meta developer cloud bridge connection
       - name: Setup OVR Platform Utility
         uses: RageAgainstThePixel/setup-ovr-platform-util@v1.2.0
 
-      # 🚀 Uploads the generated file
+      # 🚀 Step 7: Push the wrapped web experience directly to your Meta Dashboard
       - name: Upload Meta Quest Build
         uses: RageAgainstThePixel/upload-meta-quest-build@v2.2.0
         with:

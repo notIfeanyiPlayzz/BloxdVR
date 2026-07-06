@@ -1,60 +1,70 @@
-name: Package & Deploy WebXR PWA to Quest Store
+name: Build & Upload Meta Quest APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-upload:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ☕ Step 1: Java Environment Setup
-      - name: Setup Java JDK
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
-      # 🤖 Step 2: Android Developer Environment
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 📦 Step 3: Setup Node.js 
-      - name: Setup Node.js Environment
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      # 🛠️ Step 4: Link internal runner SDK paths and compile without global installation freezes
-      - name: Package Web Link to APK
-        run: |
-          # Configure bubblewrap with the system paths from our previous steps to bypass the setup wizard entirely
-          npx @bubblewrap/cli updateConfig --jdkPath="$JAVA_HOME" --androidSdkPath="$ANDROID_HOME"
-          
-          # Initialize and build using defaults from your manifest metadata
-          npx @bubblewrap/cli init --manifest="https://notifeanyiplayzz.github.io/BloxdVR/" --metaquest --metaquest_app_id="${{ secrets.META_APP_ID }}" --signingKeyPath="user.keystore" --acceptDefaults
-          npx @bubblewrap/cli build --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Decode Android Keystore
         env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > user.keystore
 
-      # 📌 Step 5: Relocate the binary
-      - name: Stage Android Package
+      - name: Configure Bubblewrap
+        run: |
+          bubblewrap updateConfig \
+            --jdkPath="$JAVA_HOME" \
+            --androidSdkPath="$ANDROID_SDK_ROOT"
+
+      # Assumes a Bubblewrap project already exists in the repo.
+      # If not, initialize one locally and commit it first.
+      - name: Build APK
+        run: |
+          bubblewrap build \
+            --signingKeyPath=user.keystore \
+            --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" \
+            --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
+
+      - name: Locate APK
         run: |
           mkdir -p build/Android
-          cp ./app-release-signed.apk ./build/Android/bloxdvr.apk
+          APK=$(find . -name "*release*.apk" | head -n 1)
+          echo "APK found: $APK"
+          cp "$APK" build/Android/bloxdvr.apk
 
-      # 🔍 Step 6: Meta OVR Backend Fetcher
-      - name: Setup OVR Platform Utility
+      - name: Setup Meta Quest CLI
         uses: RageAgainstThePixel/setup-ovr-platform-util@v1.2.0
 
-      # 🚀 Step 7: Push straight to your Meta dashboard channel
-      - name: Upload Meta Quest Build
+      - name: Upload to Meta Quest Alpha
         uses: RageAgainstThePixel/upload-meta-quest-build@v2.2.0
         with:
           appId: ${{ secrets.META_APP_ID }}
           appSecret: ${{ secrets.META_APP_SECRET }}
-          buildDir: 'build/Android'
-          releaseChannel: 'ALPHA'
+          buildDir: build/Android
+          releaseChannel: ALPHA

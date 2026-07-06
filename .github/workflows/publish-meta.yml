@@ -51,8 +51,9 @@ jobs:
       - name: Configure Bubblewrap
         run: |
           bubblewrap updateConfig \
-            --jdkPath="$JAVA_HOME" \
-            --androidSdkPath="$ANDROID_SDK_ROOT"
+          --jdkPath="$JAVA_HOME" \
+          --androidSdkPath="$ANDROID_SDK_ROOT" \
+          --silent
 
       - name: Build APK
         run: |

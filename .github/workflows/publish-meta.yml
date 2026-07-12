@@ -19,6 +19,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Verify Java
+        run: |
+          java -version
+          echo "JAVA_HOME=$JAVA_HOME"
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -28,10 +33,13 @@ jobs:
           node-version: '20'
 
       - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
+        run: |
+          npm install -g @bubblewrap/cli
 
-      # ✅ IMPORTANT: NO updateConfig (prevents interactive prompt)
-      # Bubblewrap already reads config from your repo
+      - name: Configure Bubblewrap
+        run: |
+          echo "BUBBLEWRAP_SKIP_JDK_INSTALL=true" >> $GITHUB_ENV
+          echo "CI=true" >> $GITHUB_ENV
 
       - name: Generate Android Keystore
         run: |
@@ -45,11 +53,14 @@ jobs:
             -validity 10000 \
             -dname "CN=MetaQuestApp,O=Dev,C=US"
 
-            - name: Configure Bubblewrap environment
-               run: |
-                 echo "BUBBLEWRAP_SKIP_JDK_INSTALL=true" >> $GITHUB_ENV
+      - name: Verify Keystore
+        run: |
+          ls -lh user.keystore
 
       - name: Build APK
+        env:
+          CI: true
+          BUBBLEWRAP_SKIP_JDK_INSTALL: true
         run: |
           bubblewrap build \
             --yes \
@@ -61,10 +72,12 @@ jobs:
       - name: Locate APK
         run: |
           mkdir -p build/Android
-          APK=$(find . -name "*release*.apk" | head -n 1)
+
+          APK=$(find . -type f -name "*.apk" | grep -i release | head -n 1)
 
           if [ -z "$APK" ]; then
             echo "❌ APK not found"
+            find . -name "*.apk"
             exit 1
           fi
 

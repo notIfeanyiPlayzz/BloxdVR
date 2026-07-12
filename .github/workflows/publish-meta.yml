@@ -40,6 +40,12 @@ jobs:
           ls -la user.keystore
           ls -la app/user.keystore
 
+          - name: Verify Keystore
+            run: |
+              keytool -list \
+                -keystore app/user.keystore \
+                -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
+
       - name: Build Release APK
         run: |
           ./gradlew assembleRelease \

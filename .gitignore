@@ -39,4 +39,6 @@ coverage/
 # Other
 user.keystore
 *.keystore
+.gradle/user.keystore
+*.keystore
 .gradle/

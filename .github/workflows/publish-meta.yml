@@ -48,6 +48,7 @@ jobs:
       - name: Build APK
         run: |
           bubblewrap build \
+            --yes \
             --signingKeyPath=user.keystore \
             --signingKeyAlias="${{ secrets.KEY_ALIAS }}" \
             --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" \

@@ -35,17 +35,9 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x gradlew
 
-      - name: Generate Android Keystore
+      - name: Restore Keystore
         run: |
-          keytool -genkeypair \
-            -keystore user.keystore \
-            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
-            -keypass "${{ secrets.KEY_PASSWORD }}" \
-            -alias "${{ secrets.KEY_ALIAS }}" \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=MetaQuestApp,O=Dev,C=US"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > user.keystore
 
       - name: Build Release APK
         run: |

@@ -27,11 +27,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
+      - name: Export JAVA_HOME
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
 
-      # ✅ IMPORTANT: NO updateConfig (prevents interactive prompt)
-      # Bubblewrap already reads config from your repo
+      - name: Make Gradle executable
+        run: chmod +x gradlew
 
       - name: Generate Android Keystore
         run: |
@@ -45,25 +47,26 @@ jobs:
             -validity 10000 \
             -dname "CN=MetaQuestApp,O=Dev,C=US"
 
-      - name: Build APK
+      - name: Build Release APK
         run: |
-          bubblewrap build \
-            --signingKeyPath=user.keystore \
-            --signingKeyAlias="${{ secrets.KEY_ALIAS }}" \
-            --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" \
-            --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=user.keystore \
+            -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
 
       - name: Locate APK
         run: |
           mkdir -p build/Android
-          APK=$(find . -name "*release*.apk" | head -n 1)
+
+          APK=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
 
           if [ -z "$APK" ]; then
-            echo "❌ APK not found"
+            echo "APK not found!"
             exit 1
           fi
 
-          echo "✅ APK found: $APK"
+          echo "Found APK: $APK"
           cp "$APK" build/Android/bloxdvr.apk
 
       - name: Setup Meta Quest CLI

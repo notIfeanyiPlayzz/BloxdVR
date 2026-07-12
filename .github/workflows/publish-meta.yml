@@ -7,7 +7,6 @@ on:
 
 jobs:
   build-upload:
-    name: Build & Sign Meta Quest APK
     runs-on: ubuntu-latest
 
     steps:
@@ -23,50 +22,48 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Export JAVA_HOME
-        run: |
-          echo "JAVA_HOME=$JAVA_HOME"
-          echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Make Gradle executable
-        run: chmod +x gradlew
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
 
-      - name: Restore Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > user.keystore
-          cp user.keystore app/user.keystore
+      # ✅ IMPORTANT: NO updateConfig (prevents interactive prompt)
+      # Bubblewrap already reads config from your repo
 
-      - name: Check Keystore Files
+      - name: Generate Android Keystore
         run: |
-          ls -la user.keystore
-          ls -la app/user.keystore
+          keytool -genkeypair \
+            -keystore user.keystore \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.KEY_PASSWORD }}" \
+            -alias "${{ secrets.KEY_ALIAS }}" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=MetaQuestApp,O=Dev,C=US"
 
-      - name: Verify Keystore
+      - name: Build APK
         run: |
-          keytool -list \
-            -keystore app/user.keystore \
-            -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
-
-      - name: Build Release APK
-        run: |
-          ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/app/user.keystore \
-            -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
-            -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
-            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
+          bubblewrap build \
+            --signingKeyPath=user.keystore \
+            --signingKeyAlias="${{ secrets.KEY_ALIAS }}" \
+            --signingKeyPassword="${{ secrets.KEYSTORE_PASSWORD }}" \
+            --signingKeyAliasPassword="${{ secrets.KEY_PASSWORD }}"
 
       - name: Locate APK
         run: |
           mkdir -p build/Android
-
-          APK=$(find app/build/outputs/apk -name "*.apk" | head -n 1)
+          APK=$(find . -name "*release*.apk" | head -n 1)
 
           if [ -z "$APK" ]; then
-            echo "APK not found!"
+            echo "❌ APK not found"
             exit 1
           fi
 
-          echo "Found APK: $APK"
+          echo "✅ APK found: $APK"
           cp "$APK" build/Android/bloxdvr.apk
 
       - name: Setup Meta Quest CLI

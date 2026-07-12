@@ -45,6 +45,10 @@ jobs:
             -validity 10000 \
             -dname "CN=MetaQuestApp,O=Dev,C=US"
 
+            - name: Configure Bubblewrap environment
+               run: |
+                 echo "BUBBLEWRAP_SKIP_JDK_INSTALL=true" >> $GITHUB_ENV
+
       - name: Build APK
         run: |
           bubblewrap build \

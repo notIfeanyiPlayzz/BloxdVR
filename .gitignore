@@ -35,3 +35,8 @@ temp/
 
 # Coverage
 coverage/
+
+# Other
+user.keystore
+*.keystore
+.gradle/

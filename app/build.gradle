@@ -22,31 +22,23 @@ plugins {
 
 def twaManifest = [
     applicationId: 'com.bloxdvr.app',
-    hostName: 'https://notifeanyiplayzz.github.io/BloxdVR/', // The domain being opened in the TWA.
-    launchUrl: '/', // The start path for the TWA. Must be relative to the domain.
-    name: 'BloxdVR', // The application name.
-    launcherName: 'BloxdVR', // The name shown on the Android Launcher.
-    themeColor: '#000000', // The color used for the status bar.
-    themeColorDark: '#000000', // The color used for the dark status bar.
-    navigationColor: '#000000', // The color used for the navigation bar.
-    navigationColorDark: '#000000', // The color used for the dark navbar.
-    navigationDividerColor: '#000000', // The navbar divider color.
-    navigationDividerColorDark: '#000000', // The dark navbar divider color.
-    backgroundColor: '#000000', // The color used for the splash screen background.
-    enableNotifications: false, // Set to true to enable notification delegation.
-    // Every shortcut must include the following fields:
-    // - name: String that will show up in the shortcut.
-    // - short_name: Shorter string used if |name| is too long.
-    // - url: Absolute path of the URL to launch the app with (e.g '/create').
-    // - icon: Name of the resource in the drawable folder to use as an icon.
+    hostName: 'notifeanyiplayzz.github.io',
+    launchUrl: '/BloxdVR/',
+    name: 'BloxdVR',
+    launcherName: 'BloxdVR',
+    themeColor: '#000000',
+    themeColorDark: '#000000',
+    navigationColor: '#000000',
+    navigationColorDark: '#000000',
+    navigationDividerColor: '#000000',
+    navigationDividerColorDark: '#000000',
+    backgroundColor: '#000000',
+    enableNotifications: false,
     shortcuts: [],
-    // The duration of fade out animation in milliseconds to be played when removing splash screen.
-    splashScreenFadeOutDuration: ,
-    generatorApp: 'bubblewrap-cli', // Application that generated the Android Project
-    // The fallback strategy for when Trusted Web Activity is not available. Possible values are
-    // 'customtabs' and 'webview'.
+    splashScreenFadeOutDuration: 0,
+    generatorApp: 'bubblewrap-cli',
     fallbackType: 'customtabs',
-    enableSiteSettingsShortcut: 'false',
+    enableSiteSettingsShortcut: false,
     orientation: 'landscape',
 ]
 

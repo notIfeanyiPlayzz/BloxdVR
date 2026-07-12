@@ -22,11 +22,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Export JAVA_HOME
         run: |
           echo "JAVA_HOME=$JAVA_HOME"
@@ -38,11 +33,17 @@ jobs:
       - name: Restore Keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > user.keystore
+          cp user.keystore app/user.keystore
+
+      - name: Check Keystore
+        run: |
+          ls -la user.keystore
+          ls -la app/user.keystore
 
       - name: Build Release APK
         run: |
           ./gradlew assembleRelease \
-            -Pandroid.injected.signing.store.file=user.keystore \
+            -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/app/user.keystore \
             -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
             -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
             -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"

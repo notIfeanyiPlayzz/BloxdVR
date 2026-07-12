@@ -7,6 +7,7 @@ on:
 
 jobs:
   build-upload:
+    name: Build & Sign Meta Quest APK
     runs-on: ubuntu-latest
 
     steps:
@@ -35,16 +36,16 @@ jobs:
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > user.keystore
           cp user.keystore app/user.keystore
 
-      - name: Check Keystore
+      - name: Check Keystore Files
         run: |
           ls -la user.keystore
           ls -la app/user.keystore
 
-          - name: Verify Keystore
-            run: |
-              keytool -list \
-                -keystore app/user.keystore \
-                -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
+      - name: Verify Keystore
+        run: |
+          keytool -list \
+            -keystore app/user.keystore \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
 
       - name: Build Release APK
         run: |

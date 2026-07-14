@@ -1,226 +1,638 @@
 /**
- * BloxdVR - Core Client Engine (main.js)
- * High-performance JavaScript bridge translating 6DOF inputs into voxel engine mechanics.
+ * BloxdVR - Core Client Engine
+ * WebXR + Phone VR Stereo Client
  */
 
 class BloxdVREngine {
+
   constructor() {
+
     this.xrSession = null;
     this.xrRefSpace = null;
     this.glContext = null;
     this.canvas = null;
-    
-    // Core state tracking for avatar/world sync
+
+    this.mode = localStorage.getItem("bloxd_mode") || "xr";
+    this.phoneVR = this.mode === "mobile_vr";
+
     this.playerState = {
-      position: { x: 0, y: 0, z: 0 },
-      rotation: { x: 0, y: 0, z: 0, w: 1 },
-      controllers: { left: null, right: null },
-      activeAvatar: 'Bob' // Fallback identity configuration
+      position: { x:0, y:0, z:0 },
+      rotation: { x:0, y:0, z:0, w:1 },
+      controllers:{
+        left:null,
+        right:null
+      },
+      activeAvatar:"Bob"
     };
+
 
     this.init();
   }
 
-  /**
-   * Initial bindings and browser capability scanning
-   */
-  async init() {
-    this.canvas = document.getElementById('vr-canvas') || this.createFallbackCanvas();
+
+
+  async init(){
+
+    this.canvas =
+      document.getElementById("vr-canvas") ||
+      this.createFallbackCanvas();
+
+
     this.setupUIBindings();
 
-    // Check WebXR accessibility status
-    if (navigator.xr) {
-      try {
-        const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
-        if (isSupported) {
+
+    /*
+      PHONE VR MODE
+    */
+    if(this.phoneVR){
+
+      console.log(
+        "BloxdVR: Starting Phone VR mode"
+      );
+
+      this.startPhoneVR();
+      return;
+    }
+
+
+
+    /*
+      NORMAL WEBXR MODE
+    */
+
+    if(navigator.xr){
+
+      try{
+
+        const supported =
+          await navigator.xr.isSessionSupported(
+            "immersive-vr"
+          );
+
+
+        if(supported){
+
           this.enableVRButton();
-        } else {
-          console.warn('Immersive VR session layout unsupported natively.');
+
         }
-      } catch (err) {
-        console.error('WebXR compatibility scan failure:', err);
+
+
+      }catch(e){
+
+        console.error(
+          "XR check failed",
+          e
+        );
+
       }
-    } else {
-      console.warn('WebXR API missing. Verify webxr-polyfill build injection.');
+
     }
+    else{
+
+      console.warn(
+        "WebXR unavailable"
+      );
+
+    }
+
   }
 
-  /**
-   * UI button configuration handlers
-   */
-  setupUIBindings() {
-    const vrBtn = document.getElementById('enter-vr-btn');
-    if (vrBtn) {
-      vrBtn.addEventListener('click', () => this.onRequestXRSession());
+
+
+
+  setupUIBindings(){
+
+    const btn =
+      document.getElementById(
+        "enter-vr-btn"
+      );
+
+
+    if(btn){
+
+      btn.onclick =
+        ()=>this.onRequestXRSession();
+
     }
+
   }
 
-  enableVRButton() {
-    const vrBtn = document.getElementById('enter-vr-btn');
-    if (vrBtn) {
-      vrBtn.disabled = false;
-      vrBtn.textContent = 'ENTER BLOXD VR';
+
+
+
+  enableVRButton(){
+
+    const btn =
+      document.getElementById(
+        "enter-vr-btn"
+      );
+
+
+    if(btn){
+
+      btn.disabled=false;
+      btn.innerText="ENTER BLOXD VR";
+
     }
+
   }
 
-  /**
-   * Handles initialization transitions into immersive headset rendering
-   */
-  async onRequestXRSession() {
-    if (!this.xrSession) {
-      try {
-        // Initialize WebGL context with explicit XR requirements
-        this.glContext = this.canvas.getContext('webgl', { xrCompatible: true });
-        
-        const session = await navigator.xr.requestSession('immersive-vr', {
-          requiredFeatures: ['local-floor'],
-          optionalFeatures: ['hand-tracking', 'layers']
-        });
 
-        this.onSessionStarted(session);
-      } catch (error) {
-        alert(`Failed to allocate VR runtime framework: ${error.message}`);
-      }
+
+
+  async onRequestXRSession(){
+
+
+    try{
+
+
+      this.glContext =
+        this.canvas.getContext(
+          "webgl",
+          {
+            xrCompatible:true
+          }
+        );
+
+
+
+      const session =
+        await navigator.xr.requestSession(
+          "immersive-vr",
+          {
+            requiredFeatures:[
+              "local-floor"
+            ],
+            optionalFeatures:[
+              "hand-tracking",
+              "layers"
+            ]
+          }
+        );
+
+
+
+      this.onSessionStarted(session);
+
+
+
     }
+    catch(err){
+
+      alert(
+        "VR failed: "+
+        err.message
+      );
+
+    }
+
   }
 
-  /**
-   * Successful entry pipeline execution
-   */
-  async onSessionStarted(session) {
-    this.xrSession = session;
-    session.addEventListener('end', () => this.onSessionEnded());
 
-    // Bind rendering pipeline targets
-    this.glContext.makeXRCompatible().then(() => {
-      session.updateRenderState({
-        baseLayer: new XRWebGLLayer(session, this.glContext)
-      });
 
-      session.requestReferenceSpace('local-floor').then((refSpace) => {
-        this.xrRefSpace = refSpace;
-        // Kick off primary tick generation cycle
-        session.requestAnimationFrame((time, frame) => this.onXRFrame(time, frame));
-      });
+
+
+  async onSessionStarted(session){
+
+
+    this.xrSession=session;
+
+
+    session.addEventListener(
+      "end",
+      ()=>this.onSessionEnded()
+    );
+
+
+
+    await this.glContext.makeXRCompatible();
+
+
+
+    session.updateRenderState({
+
+      baseLayer:
+        new XRWebGLLayer(
+          session,
+          this.glContext
+        )
+
     });
-    
+
+
+
+    this.xrRefSpace =
+      await session.requestReferenceSpace(
+        "local-floor"
+      );
+
+
+
+    session.requestAnimationFrame(
+      (t,f)=>this.onXRFrame(t,f)
+    );
+
+
+
     this.toggleUIVisibility(true);
+
   }
 
-  /**
-   * Core Game and Render Loop (High Frequency Event Processing)
-   */
-  onXRFrame(time, frame) {
-    const session = frame.session;
-    // Requeue loop iteration target instantly to preserve display sync
-    session.requestAnimationFrame((t, f) => this.onXRFrame(t, f));
 
-    const pose = frame.getViewerPose(this.xrRefSpace);
-    if (pose) {
-      const glLayer = session.renderState.baseLayer;
-      this.glContext.bindFramebuffer(this.glContext.FRAMEBUFFER, glLayer.framebuffer);
 
-      // Clear viewport space for subsequent redraw executions
-      this.glContext.clearColor(0.1, 0.1, 0.1, 1.0);
-      this.glContext.clear(this.glContext.COLOR_BUFFER_BIT | this.glContext.DEPTH_BUFFER_BIT);
 
-      // Process individual display view matrices (Stereoscopic Left vs Right eye)
-      for (const view of pose.views) {
-        const viewport = glLayer.getViewport(view);
-        this.glContext.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-        
-        // 3D Camera / WebGL matrix updates mapped directly into client viewport
-        this.updateCameraViewMatrix(view.transform.inverse.matrix, view.projectionMatrix);
-      }
 
-      // Read physical trackpad/hand tracking changes
-      this.processControllerInputs(frame);
+  onXRFrame(time,frame){
+
+
+    const session =
+      frame.session;
+
+
+
+    session.requestAnimationFrame(
+      (t,f)=>this.onXRFrame(t,f)
+    );
+
+
+
+    const pose =
+      frame.getViewerPose(
+        this.xrRefSpace
+      );
+
+
+    if(!pose)
+      return;
+
+
+
+    const layer =
+      session.renderState.baseLayer;
+
+
+
+    this.glContext.bindFramebuffer(
+      this.glContext.FRAMEBUFFER,
+      layer.framebuffer
+    );
+
+
+
+    this.glContext.clearColor(
+      0.05,
+      0.05,
+      0.05,
+      1
+    );
+
+
+    this.glContext.clear(
+      this.glContext.COLOR_BUFFER_BIT |
+      this.glContext.DEPTH_BUFFER_BIT
+    );
+
+
+
+    for(const view of pose.views){
+
+
+      const viewport =
+        layer.getViewport(view);
+
+
+
+      this.glContext.viewport(
+        viewport.x,
+        viewport.y,
+        viewport.width,
+        viewport.height
+      );
+
+
+
+      this.updateCameraViewMatrix(
+        view.transform.inverse.matrix,
+        view.projectionMatrix
+      );
+
     }
+
+
+
+    this.processControllerInputs(frame);
+
   }
 
-  /**
-   * Synchronizes spatial transforms targeting camera perspectives
-   */
-  updateCameraViewMatrix(viewMatrix, projectionMatrix) {
-    // Pipeline implementation hooks targeting voxel mesh projections go here
-    // Example: this.voxelRenderer.setViewProjection(viewMatrix, projectionMatrix);
+
+
+
+
+
+  /*
+    PHONE VR MODE
+    Cardboard style split screen
+  */
+
+
+  startPhoneVR(){
+
+
+    const canvas=this.canvas;
+
+
+    canvas.width =
+      window.innerWidth;
+
+
+    canvas.height =
+      window.innerHeight;
+
+
+
+    const ctx =
+      canvas.getContext("2d");
+
+
+
+    const loop=()=>{
+
+
+      const half =
+        canvas.width/2;
+
+
+
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+
+
+      // LEFT EYE
+
+      ctx.save();
+
+      ctx.beginPath();
+
+      ctx.rect(
+        0,
+        0,
+        half,
+        canvas.height
+      );
+
+      ctx.clip();
+
+
+      this.renderPhoneEye(
+        ctx,
+        0,
+        half,
+        "LEFT"
+      );
+
+
+      ctx.restore();
+
+
+
+
+
+      // RIGHT EYE
+
+
+      ctx.save();
+
+      ctx.beginPath();
+
+      ctx.rect(
+        half,
+        0,
+        half,
+        canvas.height
+      );
+
+
+      ctx.clip();
+
+
+      this.renderPhoneEye(
+        ctx,
+        half,
+        half,
+        "RIGHT"
+      );
+
+
+      ctx.restore();
+
+
+
+      requestAnimationFrame(loop);
+
+    };
+
+
+    loop();
+
+
   }
 
-  /**
-   * Maps connected inputs (Quest, Index, Rift) directly to actions
-   */
-  processControllerInputs(frame) {
-    const inputSources = this.xrSession.inputSources;
-    
-    for (const source of inputSources) {
-      if (source.gamepad) {
-        const handedness = source.handedness; // 'left' or 'right'
-        const axes = source.gamepad.axes;       // Thumbstick offsets [x, y]
-        const buttons = source.gamepad.buttons; // Array of trigger/grip metadata
 
-        // Trackpad/Thumbstick Axis Vector Extraction
-        const stickX = axes[2] || axes[0] || 0;
-        const stickY = axes[3] || axes[1] || 0;
 
-        // Button States
-        const triggerPressed = buttons[0]?.pressed || false;
-        const gripPressed = buttons[1]?.pressed || false;
 
-        this.playerState.controllers[handedness] = {
-          stick: { x: stickX, y: stickY },
-          trigger: triggerPressed,
-          grip: gripPressed
-        };
 
-        // Fire input broadcast to the underlying voxel mechanics engine
-        this.dispatchVoxelMovement(handedness, stickX, stickY, triggerPressed);
-      }
+  renderPhoneEye(
+    ctx,
+    x,
+    width,
+    eye
+  ){
+
+
+    ctx.fillStyle="#000";
+
+
+    ctx.fillRect(
+      x,
+      0,
+      width,
+      this.canvas.height
+    );
+
+
+
+    ctx.fillStyle="#2ecc00";
+
+
+    ctx.font=
+      "32px monospace";
+
+
+
+    ctx.fillText(
+      "BLOXDVR",
+      x + width/2 - 80,
+      this.canvas.height/2
+    );
+
+
+
+    ctx.font=
+      "16px monospace";
+
+
+    ctx.fillText(
+      eye+" EYE",
+      x + width/2 - 35,
+      this.canvas.height/2 + 40
+    );
+
+
+  }
+
+
+
+
+
+
+
+  processControllerInputs(frame){
+
+
+    for(
+      const source of this.xrSession.inputSources
+    ){
+
+
+      if(!source.gamepad)
+        continue;
+
+
+
+      const gp =
+        source.gamepad;
+
+
+
+      this.playerState.controllers[
+        source.handedness
+      ]={
+
+        trigger:
+          gp.buttons[0]?.pressed || false,
+
+        grip:
+          gp.buttons[1]?.pressed || false,
+
+        x:
+          gp.axes[0] || 0,
+
+        y:
+          gp.axes[1] || 0
+
+      };
+
     }
+
   }
 
-  /**
-   * Converts continuous thumbstick coordinate vectors into structural player position transforms
-   */
-  dispatchVoxelMovement(hand, x, y, trigger) {
-    if (Math.abs(x) > 0.1 || Math.abs(y) > 0.1) {
-      // Scale coordinates to step variables matching standard movement speeds
-      const speedModifier = 0.08;
-      this.playerState.position.x += x * speedModifier;
-      this.playerState.position.z += y * speedModifier;
-      
-      // Hook routing target logic tracing out into sandbox coordinates
-      // console.log(`Moving ${this.playerState.activeAvatar}:`, this.playerState.position);
-    }
+
+
+
+
+
+
+  updateCameraViewMatrix(
+    view,
+    projection
+  ){
+
+    // Connect your 3D renderer here
+
   }
 
-  /**
-   * Tear-down logic triggered upon tracking suspension alerts
-   */
-  onSessionEnded() {
-    this.xrSession = null;
-    this.xrRefSpace = null;
+
+
+
+
+
+
+  onSessionEnded(){
+
+
+    this.xrSession=null;
+
+    this.xrRefSpace=null;
+
+
     this.toggleUIVisibility(false);
-    console.log('Immersive VR Session successfully closed.');
+
+
   }
 
-  toggleUIVisibility(isInVR) {
-    const overlay = document.getElementById('vr-overlay-hud');
-    if (overlay) {
-      overlay.style.display = isInVR ? 'block' : 'none';
-    }
+
+
+
+
+
+  toggleUIVisibility(v){
+
+
+    const hud =
+      document.getElementById(
+        "vr-overlay-hud"
+      );
+
+
+    if(hud)
+      hud.style.display =
+        v ? "block":"none";
+
   }
 
-  createFallbackCanvas() {
-    const canvas = document.createElement('canvas');
-    canvas.id = 'vr-canvas';
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    document.body.appendChild(canvas);
-    return canvas;
+
+
+
+
+
+  createFallbackCanvas(){
+
+
+    const c =
+      document.createElement(
+        "canvas"
+      );
+
+
+    c.id="vr-canvas";
+
+
+    c.style.width="100vw";
+    c.style.height="100vh";
+
+
+    document.body.appendChild(c);
+
+
+    return c;
+
   }
+
 }
 
-// Instantiate engine logic cleanly once DOM parameters register complete
-window.addEventListener('DOMContentLoaded', () => {
-  window.appEngine = new BloxdVREngine();
+
+
+
+window.addEventListener(
+"DOMContentLoaded",
+()=>{
+
+  window.appEngine =
+    new BloxdVREngine();
+
 });

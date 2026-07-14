@@ -1,150 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BloxdVR | Active VR Session</title>
-    
-    <!-- 🖼️ Assets Mapping -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
-    
-    <!-- 🧊 3D Viewer & VR Libs -->
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
-    <script src="libs/webxr-polyfill.js"></script>
-    <script src="scripts/vr_handler.js" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        :root { --primary: #2ecc00; --bg: #000; --panel: #0d0d0d; --text: #eee; --border: #333; }
-        
-        body, html { 
-            margin: 0; padding: 0; height: 100vh; width: 100vw; 
-            background: var(--bg); color: var(--text);
-            font-family: 'Pixelify Sans', sans-serif;
-            display: flex; overflow: hidden;
-        }
+<title>BloxdVR | Active VR Session</title>
 
-        /* ⬅️ Left Sidebar: Profile & Active Avatar */
-        .side-left {
-            width: 300px; background: var(--panel);
-            border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
-        }
+<link rel="icon" href="favicon.ico">
 
-        /* ➡️ Right Sidebar: VR Controls & Logs */
-        .side-right {
-            width: 260px; background: var(--panel);
-            border-left: 1px solid var(--border);
-            display: flex; flex-direction: column; padding: 15px; box-sizing: border-box;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-        /* 🎮 Center: Bloxd.io Game Frame */
-        .game-viewport { flex: 1; position: relative; background: #000; }
-        iframe { width: 100%; height: 100%; border: none; }
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.2.0/model-viewer.min.js"></script>
 
-        /* UI Components */
-        .header-label { 
-            color: var(--primary); font-size: 0.9rem; letter-spacing: 2px; 
-            margin-bottom: 10px; border-bottom: 1px solid #222; padding-bottom: 5px;
-        }
-        
-        model-viewer { 
-            width: 100%; height: 280px; background: #050505; 
-            border-radius: 8px; border: 1px solid #222; margin-bottom: 15px; 
-        }
+<style>
 
-        .data-card {
-            background: #151515; padding: 12px; border-radius: 6px; margin-bottom: 10px;
-            font-size: 0.75rem; border-left: 3px solid var(--primary);
-        }
-        .data-card b { color: #666; display: block; text-transform: uppercase; font-size: 0.6rem; margin-bottom: 2px; }
+:root {
+    --primary:#2ecc00;
+    --bg:#000;
+    --panel:#0d0d0d;
+    --text:#eee;
+}
 
-        .btn-action {
-            background: #1a1a1a; color: var(--text); border: 1px solid #333;
-            padding: 12px; margin-bottom: 8px; border-radius: 6px; cursor: pointer;
-            text-align: left; font-family: 'Pixelify Sans', sans-serif; transition: 0.2s;
-        }
-        .btn-action:hover { background: var(--primary); color: #000; border-color: var(--primary); }
-        .btn-exit { margin-top: auto; background: #400; color: #ff8888; border-color: #600; }
-        .btn-exit:hover { background: #f00; color: #fff; }
 
-        /* Status Light */
-        .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; color: #888; }
-        .dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); }
-    </style>
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:black;
+    color:white;
+    font-family:'Pixelify Sans',sans-serif;
+}
+
+
+body{
+    display:flex;
+}
+
+
+#vr-canvas{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    z-index:-1;
+}
+
+
+
+.side-left,
+.side-right{
+
+    width:280px;
+    background:#0d0d0d;
+    padding:15px;
+    box-sizing:border-box;
+    z-index:5;
+
+}
+
+
+.side-left{
+    border-right:1px solid #333;
+}
+
+
+.side-right{
+    border-left:1px solid #333;
+}
+
+
+
+.game-viewport{
+
+    flex:1;
+    position:relative;
+    z-index:2;
+
+}
+
+
+
+iframe{
+
+    width:100%;
+    height:100%;
+    border:0;
+
+}
+
+
+
+.header-label{
+
+    color:var(--primary);
+    border-bottom:1px solid #222;
+    padding-bottom:6px;
+    margin-bottom:10px;
+    letter-spacing:2px;
+
+}
+
+
+
+model-viewer{
+
+    width:100%;
+    height:250px;
+    background:#050505;
+
+}
+
+
+
+.data-card{
+
+    background:#151515;
+    padding:10px;
+    margin-bottom:10px;
+    border-left:3px solid var(--primary);
+
+}
+
+
+.data-card b{
+
+    display:block;
+    color:#777;
+    font-size:.7rem;
+
+}
+
+
+
+.btn-action{
+
+    width:100%;
+    padding:12px;
+    margin-bottom:8px;
+
+    background:#111;
+    color:white;
+
+    border:1px solid #333;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+}
+
+
+
+.btn-action:hover{
+
+    background:var(--primary);
+    color:black;
+
+}
+
+
+
+.btn-exit{
+
+    margin-top:40px;
+    background:#400;
+    color:#ff9999;
+
+}
+
+
+
+.status{
+
+    color:#2ecc00;
+    font-size:.8rem;
+
+}
+
+
+
+</style>
+
 </head>
+
+
 <body>
 
-    <!-- ⬅️ PROFILE SIDEBAR -->
-    <aside class="side-left">
-        <div class="header-label">ACTIVE_IDENTITY</div>
-        <model-viewer id="vrPreview" 
-            src="models/skins/Bob.glb" 
-            auto-rotate 
-            camera-controls 
-            exposure="1" 
-            interaction-prompt="none">
-        </model-viewer>
-        
-        <div class="data-card">
-            <b>Avatar Name</b>
-            <span id="charName">Bob</span>
-        </div>
-        <div class="data-card">
-            <b>Session ID</b>
-            <span id="sessionID">BVR-9924-X</span>
-        </div>
-        <div class="status-indicator">
-            <div class="dot"></div> VR Handlers Active (WebXR)
-        </div>
-    </aside>
 
-    <!-- 🎮 MAIN GAME WINDOW -->
-    <main class="game-viewport">
-        <iframe src="https://bloxd.io" allow="autoplay; gamepad; xr-spatial-tracking; fullscreen"></iframe>
-    </main>
+<!-- Phone VR / WebXR Canvas -->
+<canvas id="vr-canvas"></canvas>
 
-    <!-- ➡️ VR CONTROLLER SIDEBAR -->
-    <aside class="side-right">
-        <div class="header-label">SESSION_CONTROLS</div>
-        
-        <button class="btn-action" onclick="toggleVR()">Initialize WebXR</button>
-        <button class="btn-action" onclick="document.querySelector('iframe').src+=''">Refresh Game</button>
-        <button class="btn-action" onclick="document.documentElement.requestFullscreen()">Fullscreen Mode</button>
-        
-        <div class="header-label" style="margin-top:20px;">SYSTEM_RESOURCES</div>
-        <div class="data-card">
-            <b>Polyfill Status</b>
-            <span>Integrated (v2.1)</span>
-        </div>
-        <div class="data-card">
-            <b>Input Bridge</b>
-            <span>scripts/input-bridge.js</span>
-        </div>
-        
-        <button class="btn-action btn-exit" onclick="window.location.href='index.html'">Terminiate Session</button>
-    </aside>
 
-    <script>
-        // Synchronize with Hub Selection
-        window.addEventListener('load', () => {
-            const activeChar = localStorage.getItem('bloxd_avatar') || 'Bob';
-            document.getElementById('charName').innerText = activeChar;
-            document.getElementById('vrPreview').src = `assets/models/skins/${activeChar}.glb`;
-            
-            // Random Session ID for flavor
-            document.getElementById('sessionID').innerText = 'BVR-' + Math.floor(Math.random()*9000 + 1000) + '-X';
-        });
 
-        function toggleVR() {
-            // Placeholder for triggering your vr_handler.js logic
-            console.log("BloxdVR: Requesting WebXR Session...");
-            if (typeof initVR === "function") {
-                initVR();
-            } else {
-                alert("VR Handler script (scripts/vr_handler.js) detected. Ensure it is configured for WebXR.");
-            }
-        }
-    </script>
+<aside class="side-left">
+
+<div class="header-label">
+ACTIVE_IDENTITY
+</div>
+
+
+<model-viewer
+id="vrPreview"
+src="models/skins/Bob.glb"
+auto-rotate
+camera-controls>
+</model-viewer>
+
+
+
+<div class="data-card">
+
+<b>Avatar Name</b>
+
+<span id="charName">
+Bob
+</span>
+
+</div>
+
+
+
+<div class="data-card">
+
+<b>Session ID</b>
+
+<span id="sessionID">
+BVR-0000-X
+</span>
+
+</div>
+
+
+<div class="status">
+
+● WebXR / Phone VR Ready
+
+</div>
+
+
+</aside>
+
+
+
+
+
+<main class="game-viewport">
+
+
+<iframe
+src="https://bloxd.io"
+allow="
+autoplay;
+gamepad;
+xr-spatial-tracking;
+fullscreen">
+</iframe>
+
+
+</main>
+
+
+
+
+
+<aside class="side-right">
+
+
+<div class="header-label">
+SESSION_CONTROLS
+</div>
+
+
+
+<button class="btn-action"
+onclick="toggleVR()">
+
+Initialize WebXR
+
+</button>
+
+
+
+<button class="btn-action"
+onclick="refreshGame()">
+
+Refresh Game
+
+</button>
+
+
+
+<button class="btn-action"
+onclick="requestFullscreen()">
+
+Fullscreen
+
+</button>
+
+
+
+<div class="header-label">
+
+SYSTEM
+
+</div>
+
+
+
+<div class="data-card">
+
+<b>Mode</b>
+
+<span id="mode">
+Detecting...
+</span>
+
+</div>
+
+
+
+
+<div class="data-card">
+
+<b>Engine</b>
+
+<span>
+main.js loaded
+</span>
+
+</div>
+
+
+
+<button class="btn-action btn-exit"
+onclick="location.href='index.html'">
+
+Terminate Session
+
+</button>
+
+
+
+</aside>
+
+
+
+
+
+<!-- WebXR fallback -->
+<script src="libs/webxr-polyfill.js"></script>
+
+
+<!-- Existing handlers -->
+<script src="scripts/vr_handler.js" defer></script>
+
+
+<!-- Main VR Engine -->
+<script src="assets/js/main.js"></script>
+
+
+
+
+<script>
+
+
+window.addEventListener("load",()=>{
+
+
+const session =
+JSON.parse(
+localStorage.getItem("bloxd_session")
+);
+
+
+
+if(session){
+
+
+document.getElementById("charName").innerText =
+session.avatar;
+
+
+document.getElementById("vrPreview").src =
+session.model;
+
+
+}
+
+
+
+document.getElementById("sessionID").innerText =
+"BVR-" +
+Math.floor(Math.random()*9000+1000)
++
+"-X";
+
+
+
+const mode =
+localStorage.getItem("bloxd_mode")
+||
+"xr";
+
+
+document.getElementById("mode").innerText =
+mode==="mobile_vr"
+?
+"PHONE VR SPLIT"
+:
+"WEBXR HEADSET";
+
+
+
+});
+
+
+
+
+
+function refreshGame(){
+
+document.querySelector("iframe").src =
+"https://bloxd.io";
+
+}
+
+
+
+
+function requestFullscreen(){
+
+document.documentElement.requestFullscreen();
+
+}
+
+
+
+
+
+function toggleVR(){
+
+
+console.log(
+"BloxdVR requesting WebXR..."
+);
+
+
+
+if(window.appEngine){
+
+window.appEngine.onRequestXRSession();
+
+}
+
+else if(typeof initVR==="function"){
+
+initVR();
+
+}
+
+else{
+
+alert(
+"VR engine not loaded"
+);
+
+}
+
+
+}
+
+
+
+</script>
+
+
 </body>
 </html>

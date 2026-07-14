@@ -84,10 +84,10 @@ jobs:
           echo "✅ APK found: $APK"
           cp "$APK" build/Android/bloxdvr.apk
 
-      - name: Setup Meta Quest CLI
+      - name: Setup OVR Platform Utility
         uses: RageAgainstThePixel/setup-ovr-platform-util@v1.2.0
 
-      - name: Upload to Meta Quest Alpha
+      - name: Upload Meta Quest Build
         uses: RageAgainstThePixel/upload-meta-quest-build@v2.2.0
         with:
           appId: ${{ secrets.META_APP_ID }}
